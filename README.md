@@ -20,7 +20,7 @@ Here are the steps to set up the development environment for this project:
    ```sh
    npm run dev
    ```
-6. Open your web browser and access <http://localhost:5173/bato-maj-dlc> to view the application.
+6. Open your web browser and access <http://localhost:5175/bato-maj-dlc> to view the application.
 
 
 ## Production Deployment
