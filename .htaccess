@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/bato-maj-dlc/public/
+RewriteCond %{REQUEST_URI} !^/bato-maj-dlc/app/
+RewriteRule ^(.*)$ /bato-maj-dlc/public/$1 [L]
