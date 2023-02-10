@@ -8,6 +8,7 @@ export const useMainStore = defineStore('mainStore', {
     }),
 
     getters: {
+        // return app backend url
         appURL():string {
             const location = window.location;
             if(location.hostname == 'localhost' && location.port == '5175')
