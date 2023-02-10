@@ -1,13 +1,14 @@
 <template>
     <div>
         <h1>{{ data }}</h1>
+        <router-view/>
     </div>
 </template>
 
 
 <script lang="ts" setup>
     import { onMounted, ref } from "vue";
-    import { useMainStore } from './stores/mainStore';
+    import { useMainStore } from './store/mainStore';
 
     const mainStore = useMainStore();
     const data = ref('value');
