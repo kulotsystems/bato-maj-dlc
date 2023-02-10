@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useMainStore } from './mainStore';
+import { useStore } from './index';
 import { UserType } from '../types/User.type';
 
 export const useAuthStore = defineStore('authStore', {
@@ -14,13 +14,7 @@ export const useAuthStore = defineStore('authStore', {
     actions: {
         // get authenticated user
         async getUser() {
-            const mainStore = useMainStore();
-
-            await fetch(`${mainStore.appURL}/index.php?getUser`, {
-                method: 'GET',
-                credentials: 'include'
-            })
-                .then(response => response.json())
+            await useStore().requestAsync('GET', null, 'getUser')
                 .then(result => {
                     this.user = result.user;
                 })
@@ -29,17 +23,10 @@ export const useAuthStore = defineStore('authStore', {
 
         // handle sign in
         async signIn(username: string, password: string) {
-            const mainStore = useMainStore();
-
-            await fetch(`${mainStore.appURL}/index.php`, {
-                method: 'POST',
-                credentials: 'include',
-                body: JSON.stringify({
-                    username,
-                    password
-                })
+            await useStore().requestAsync('POST', {
+                username,
+                password
             })
-                .then(response => response.json())
                 .then(result => {
                     this.user = result.user;
                 })
@@ -48,20 +35,14 @@ export const useAuthStore = defineStore('authStore', {
 
         // handle sign out
         async signOut() {
-            const mainStore = useMainStore();
-
-            await fetch(`${mainStore.appURL}/index.php`, {
-                method: 'POST',
-                credentials: 'include',
-                body: JSON.stringify({
-                    signOut: true
-                })
+            await useStore().requestAsync('POST', {
+                signOut: true
             })
-                .then(response => response.json())
                 .then(result => {
                     this.user = null;
                 })
                 .catch(error => console.log('Error in signing out: ', error));
+
         }
     }
 });
