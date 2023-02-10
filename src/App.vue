@@ -1,41 +1,37 @@
 <template>
     <div>
-        <h1>{{ data }}</h1>
-        <router-link :to="{ name: 'login' }">Login</router-link> |
-        <router-link :to="{ name: 'admin' }">Admin</router-link> |
-        <router-link :to="{ name: 'judge' }">Judge</router-link> |
-        <router-link :to="{ name: 'technical' }">Technical</router-link>
+        <router-link :class="{ 'active': route.name === 'sign-in'}" :to="{ name: 'sign-in' }">Sign in</router-link> |
+        <router-link :class="{ 'active': route.name === 'admin'  }" :to="{ name: 'admin' }">Admin</router-link> |
+        <router-link :class="{ 'active': route.name === 'judge'  }" :to="{ name: 'judge' }">Judge</router-link> |
+        <router-link :class="{ 'active': route.name === 'technical' }" :to="{ name: 'technical' }">Technical</router-link>
         <router-view/>
     </div>
 </template>
 
 
 <script lang="ts" setup>
-    import { onMounted, ref } from "vue";
-    import { useMainStore } from './store/mainStore';
+    import { onMounted } from 'vue';
+    import { useRouter, useRoute } from 'vue-router';
+    import { useAuthStore } from './store/authStore';
 
-    const mainStore = useMainStore();
-    const data = ref('value');
+    const router = useRouter();
+    const route  = useRoute();
+    const authStore = useAuthStore();
+
+    const getUser = async () => {
+        await authStore.getUser();
+        if(authStore.user)
+            await router.replace({ name: authStore.user.userType });
+    }
 
     onMounted(() => {
-        const fetchData = async () => {
-            // await fetch('app/index.php')
-            await fetch(`${mainStore.appURL}/index.php`)
-                .then(response => response.json())
-                .then(result => {
-                    console.log('result: ', result);
-                    data.value = result.data;
-                })
-                .catch(error => {
-                    console.log('error: ', error)
-                });
-        };
-        fetchData();
+        getUser();
     });
-
 </script>
 
 
 <style scoped>
-
+    .active {
+        font-weight: bold;
+    }
 </style>
