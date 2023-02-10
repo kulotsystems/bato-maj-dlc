@@ -12,7 +12,7 @@
 <script lang="ts" setup>
     import { onMounted } from 'vue';
     import { useRouter, useRoute } from 'vue-router';
-    import { useAuthStore } from './store/authStore';
+    import { useAuthStore } from './store/auth';
 
     const router = useRouter();
     const route  = useRoute();
