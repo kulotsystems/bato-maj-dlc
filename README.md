@@ -1,5 +1,5 @@
 # bato-maj-dlc
-Majorette and DLC Competition Tabulation System for Bato Foundation Anniversary
+Majorettes and DLC Competition Tabulation System for Bato Foundation Anniversary
 
 
 ## Development Setup
@@ -20,7 +20,9 @@ Here are the steps to set up the development environment for this project:
    ```sh
    npm run dev
    ```
-6. Open your web browser and access <http://localhost:5175/bato-maj-dlc> to view the application.
+6. Inside [phpMyAdmin](http://localhost/phpmyadmin),
+   create a MySQL database named `bato-maj-dlc` and import [bato-maj-dlc.sql](bato-maj-dlc.sql) into it.
+7. Open your web browser and access <http://localhost:5175/bato-maj-dlc> to view the application.
 
 
 ## Production Deployment
