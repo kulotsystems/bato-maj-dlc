@@ -1,4 +1,16 @@
 RewriteEngine On
+RewriteBase /bato-maj-dlc/
+
+# Exclude assets from rewrite rule
+RewriteCond %{REQUEST_URI} !\.(css|js|svg|jpg|jpeg|png|gif)$ [NC]
+
+# Redirect all requests to index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /bato-maj-dlc/public/index.html [L]
+
+# Exclude the public and app directories from the rewrite rule
 RewriteCond %{REQUEST_URI} !^/bato-maj-dlc/public/
 RewriteCond %{REQUEST_URI} !^/bato-maj-dlc/app/
 RewriteRule ^(.*)$ /bato-maj-dlc/public/$1 [L]
+
