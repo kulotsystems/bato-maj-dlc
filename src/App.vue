@@ -1,6 +1,10 @@
 <template>
     <div>
         <h1>{{ data }}</h1>
+        <router-link :to="{ name: 'login' }">Login</router-link> |
+        <router-link :to="{ name: 'admin' }">Admin</router-link> |
+        <router-link :to="{ name: 'judge' }">Judge</router-link> |
+        <router-link :to="{ name: 'technical' }">Technical</router-link>
         <router-view/>
     </div>
 </template>
