@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 10, 2023 at 02:41 AM
+-- Generation Time: Feb 11, 2023 at 05:52 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -210,7 +210,9 @@ CREATE TABLE `ratings_maj` (
 
 CREATE TABLE `users_admin` (
   `id` tinyint(4) UNSIGNED NOT NULL,
+  `number` tinyint(3) UNSIGNED NOT NULL,
   `fullname` varchar(128) NOT NULL,
+  `avatar` varchar(128) NOT NULL,
   `username` varchar(64) NOT NULL,
   `password` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -221,8 +223,8 @@ CREATE TABLE `users_admin` (
 -- Dumping data for table `users_admin`
 --
 
-INSERT INTO `users_admin` (`id`, `fullname`, `username`, `password`, `created_at`, `updated_at`) VALUES
-(1, 'SUPER USER', 'admin', 'admin', '2023-02-10 01:41:15', '2023-02-10 01:41:15');
+INSERT INTO `users_admin` (`id`, `number`, `fullname`, `avatar`, `username`, `password`, `created_at`, `updated_at`) VALUES
+(1, 1, 'SUPER USER', '', 'admin', 'admin', '2023-02-10 01:41:15', '2023-02-11 04:51:45');
 
 -- --------------------------------------------------------
 

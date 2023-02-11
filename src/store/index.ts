@@ -9,7 +9,12 @@ export const useStore = defineStore('store', {
     }),
 
     getters: {
-        // return app backend url
+        // get app name
+        appName() {
+            return import.meta.env.BASE_URL.replaceAll('/', '');
+        },
+
+        // get app backend url
         appURL():string {
             const location = window.location;
             if(location.hostname == 'localhost' && location.port == '5175')
@@ -36,7 +41,8 @@ export const useStore = defineStore('store', {
                 init.body = JSON.stringify(body);
 
             // request
-            return await fetch(input, init).then(response => response.json());
+            return await fetch(input, init)
+                .then(response => response.json())
         }
     }
 });

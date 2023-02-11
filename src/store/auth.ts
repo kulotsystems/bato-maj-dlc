@@ -4,15 +4,25 @@ import { UserType } from '../types/User.type';
 
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
-        user: null as UserType | null
+        user : null as UserType | null,
+        error: '',
     }),
 
     getters: {
-
+        // get hasError
+        hasError(state) {
+            return state.error != '';
+        }
     },
 
     actions: {
-        // get authenticated user
+        // clear error
+        clearError() {
+            this.error = '';
+        },
+
+
+        // request authenticated user
         async getUser() {
             await useStore().requestAsync('GET', null, 'getUser')
                 .then(result => {
@@ -23,14 +33,17 @@ export const useAuthStore = defineStore('authStore', {
 
         // handle sign in
         async signIn(username: string, password: string) {
+            this.error = '';
             await useStore().requestAsync('POST', {
                 username,
                 password
             })
                 .then(result => {
-                    this.user = result.user;
-                })
-                .catch(error => console.log('Error in signing in: ', error));
+                    if(result.error)
+                        this.error = result.error;
+                    else
+                        this.user = result.user;
+                });
         },
 
         // handle sign out

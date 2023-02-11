@@ -60,7 +60,7 @@ export default createRouter({
             name: 'technical',
             component: () => import('../views/Technical.vue'),
             meta: {
-                title: 'Technical'
+                title: 'Technical Judge'
             },
             beforeEnter: requireAuth
         }
