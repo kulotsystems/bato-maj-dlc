@@ -88,7 +88,7 @@
 
 
 <script lang="ts" setup>
-    import { ref, computed, reactive, defineProps, onMounted } from 'vue';
+    import { ref, computed, reactive, onMounted } from 'vue';
     import { useStore } from '../../store/store';
     import { PortionKeyType } from '../../types/Portion.type';
     import { ScoreSheetType } from '../../types/ScoreSheet.type';
