@@ -81,6 +81,10 @@ export default createRouter({
                 title: 'Technical Judge'
             },
             beforeEnter: requireAuth
+        },
+        {
+            path: '/:catchAll(.*)',
+            redirect: { name: 'sign-in' }
         }
     ]
 });
