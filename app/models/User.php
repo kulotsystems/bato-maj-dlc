@@ -14,12 +14,12 @@ class User extends App
     protected $userType;
 
 
-    public function __construct($username, $password, $table, $userType)
+    public function __construct($username, $password, $userType)
     {
         parent::__construct();
         $this->username = $username;
         $this->password = $password;
-        $this->table = $table;
+        $this->table    = 'users_'.$userType;
         $this->userType = $userType;
     }
 
@@ -31,7 +31,6 @@ class User extends App
             $authenticated = (new User(
                 $_SESSION['user']['username'],
                 $_SESSION['pass'],
-                'users_'.$_SESSION['user']['userType'],
                 $_SESSION['user']['userType']
             ))->signIn();
 
