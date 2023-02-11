@@ -4,6 +4,7 @@ require_once 'App.php';
 
 class User extends App
 {
+    protected $id;
     protected $username;
     protected $password;
     protected $fullName;
@@ -45,12 +46,13 @@ class User extends App
 
     public function signIn()
     {
-        $stmt = $this->conn->prepare("SELECT username, password, fullname, avatar, number FROM $this->table WHERE username = ? AND password = ?");
+        $stmt = $this->conn->prepare("SELECT id, username, password, fullname, avatar, number FROM $this->table WHERE username = ? AND password = ?");
         $stmt->bind_param("ss", $this->username, $this->password);
         $stmt->execute();
         $result = $stmt->get_result();
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
+            $this->id = $row['id'];
             $this->fullName = $row['fullname'];
             $this->avatar = $row['avatar'];
             $this->number = $row['number'];
@@ -66,6 +68,7 @@ class User extends App
     public function getInfo()
     {
         return [
+            'id'       => $this->id,
             'username' => $this->username,
             'fullName' => $this->fullName,
             'avatar'   => $this->avatar,
