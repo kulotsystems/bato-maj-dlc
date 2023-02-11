@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import vuetify from './vuetify';
-import router from './router';
+import vuetify from './vuetify/vuetify';
+import router from './router/router';
 import './style.css';
 import App from './App.vue';
 

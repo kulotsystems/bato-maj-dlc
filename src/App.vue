@@ -11,7 +11,7 @@
 <script lang="ts" setup>
     import { onMounted } from 'vue';
     import { useRouter, useRoute } from 'vue-router';
-    import { useAuthStore } from './store/auth';
+    import { useAuthStore } from './store/store-auth';
 
     // components
     import TopBar from './components/nav/TopBar.vue';

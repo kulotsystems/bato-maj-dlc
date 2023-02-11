@@ -40,7 +40,7 @@
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
     import { useRouter } from 'vue-router';
-    import { useAuthStore } from '../store/auth';
+    import { useAuthStore } from '../store/store-auth';
 
     // use hooks
     const router = useRouter();

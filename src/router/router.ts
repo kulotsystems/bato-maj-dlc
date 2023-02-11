@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../store/store-auth';
 
 const requireAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const authStore = useAuthStore();

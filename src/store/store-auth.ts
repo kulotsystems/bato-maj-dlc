@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useStore } from './index';
+import { useStore } from './store';
 import { UserType } from '../types/User.type';
 
 export const useAuthStore = defineStore('authStore', {
