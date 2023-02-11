@@ -24,7 +24,7 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
 
         // todo: validate input
         $username = trim(strtolower($POST['username']));
-        $password = trim(strtolower($POST['password']));
+        $password = $POST['password'];
 
         $user = (new Admin($username, $password))->signIn();
         if(!$user) {
@@ -34,12 +34,9 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
         }
 
         if($user) {
-            $userData = $user->getInfo();
-            $_SESSION['user'] = $userData;
-
             // successfully logged in
             echo json_encode([
-                'user' => $userData
+                'user' => $user->getInfo()
             ]);
         }
         else
