@@ -1,6 +1,7 @@
 <template>
     <v-app>
         <top-bar/>
+        <side-bar v-if="authStore.user"/>
         <v-main>
             <router-view/>
         </v-main>
@@ -14,7 +15,8 @@
     import { useAuthStore } from './store/store-auth';
 
     // components
-    import TopBar from './components/nav/TopBar.vue';
+    import TopBar  from './components/nav/TopBar.vue';
+    import SideBar from './components/nav/SideBar.vue';
 
     // use hooks
     const router = useRouter();
