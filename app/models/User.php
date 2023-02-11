@@ -4,7 +4,7 @@ require_once 'App.php';
 
 class User extends App
 {
-    protected $id;
+    protected $id = null;
     protected $username;
     protected $password;
     protected $fullName;
@@ -21,6 +21,19 @@ class User extends App
         $this->password = $password;
         $this->table    = 'users_'.$userType;
         $this->userType = $userType;
+
+        // get other info
+        $stmt = $this->conn->prepare("SELECT * FROM $this->table WHERE username = ? AND password = ?");
+        $stmt->bind_param("ss", $this->username, $this->password);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $this->id = $row['id'];
+            $this->fullName = $row['fullname'];
+            $this->avatar = $row['avatar'];
+            $this->number = $row['number'];
+        }
     }
 
 
@@ -43,19 +56,15 @@ class User extends App
     }
 
 
+    public function authenticated()
+    {
+        return (bool)$this->id;
+    }
+
+
     public function signIn()
     {
-        $stmt = $this->conn->prepare("SELECT id, username, password, fullname, avatar, number FROM $this->table WHERE username = ? AND password = ?");
-        $stmt->bind_param("ss", $this->username, $this->password);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $this->id = $row['id'];
-            $this->fullName = $row['fullname'];
-            $this->avatar = $row['avatar'];
-            $this->number = $row['number'];
-
+        if($this->authenticated()) {
             $_SESSION['user'] = $this->getInfo();
             $_SESSION['pass'] = $this->password;
             return $this;

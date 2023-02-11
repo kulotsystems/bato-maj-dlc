@@ -1,21 +1,16 @@
 <?php
-header('Access-Control-Allow-Origin: http://localhost:5175');
-header("Access-Control-Allow-Credentials: true");
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type');
-session_start();
-require_once 'config/database.php';
+require_once '_init.php';
 
-if(isset($_GET['getUser']))
-{
-    require_once 'models/User.php';
+// get requests
+if(isset($_GET['getUser'])) {
     echo json_encode([
-        'user' => User::getUser()
+        'user' => getUser()
     ]);
 }
 
-else if($POST = json_decode(file_get_contents('php://input'), true))
-{
+// post requests
+else if($POST = json_decode(file_get_contents('php://input'), true)) {
+
     // user sign-in
     if(isset($POST['username']) && isset($POST['password'])) {
         require_once 'models/Admin.php';
@@ -51,9 +46,6 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
         ]);
     }
 
-    else {
-        echo json_encode([
-            'data' => 'Invalid Request'
-        ]);
-    }
+    else
+        denyAccess();
 }

@@ -8,4 +8,21 @@ class Judge extends User
     {
         parent::__construct($username, $password, 'judge');
     }
+
+    /**
+     * @param $contingentType: 'maj' | 'dlc'
+     */
+    public function getScoreSheet($contingentType)
+    {
+        require_once 'Contingent.php';
+
+        $contingents = Contingent::all($contingentType);
+        $criteria    = Contingent::criteria($contingentType);
+
+
+        return [
+            'contingents' => $contingents,
+            'criteria'    => $criteria
+        ];
+    }
 }

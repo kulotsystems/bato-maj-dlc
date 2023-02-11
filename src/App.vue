@@ -10,8 +10,9 @@
 
 
 <script lang="ts" setup>
-    import { onBeforeMount, onMounted } from 'vue';
+    import { onMounted, nextTick, onBeforeUnmount } from 'vue';
     import { useRouter, useRoute } from 'vue-router';
+    import { useStore } from './store/store';
     import { useAuthStore } from './store/store-auth';
     import { usePortionStore } from './store/store-portion';
 
@@ -24,6 +25,7 @@
     // use hooks
     const router = useRouter();
     const route  = useRoute();
+    const store  = useStore();
     const authStore = useAuthStore();
     const portionStore = usePortionStore();
 
@@ -41,9 +43,26 @@
         }
     }
 
+    const handleWindowResize = () => {
+        store.setWindowHeight(window.innerHeight);
+    };
+
+
     // onMounted hook
     onMounted(() => {
         getUser();
+
+        // resize event
+        nextTick(() => {
+            window.addEventListener('resize', handleWindowResize);
+            handleWindowResize();
+        });
+    });
+
+
+    // onBeforeUnmount hook
+    onBeforeUnmount(() => {
+        window.removeEventListener('resize', handleWindowResize);
     });
 </script>
 
