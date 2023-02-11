@@ -15,4 +15,13 @@ class App
             die('connection failed: ' . $this->conn->connect_error);
         }
     }
+
+
+    public static function returnError($header, $error)
+    {
+        header($header);
+        die(json_encode([
+            'error' => $error
+        ]));
+    }
 }

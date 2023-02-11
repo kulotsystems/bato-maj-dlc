@@ -1,10 +1,6 @@
 <template>
     <div>
-        <h1>Admin</h1>
-        <div v-if="authStore.user">
-            <p>{{ authStore.user.fullName }}</p>
-            <button @click="handleSignOut">Sign out</button>
-        </div>
+
     </div>
 </template>
 
@@ -13,9 +9,11 @@
     import { useRouter } from 'vue-router';
     import { useAuthStore } from '../store/auth';
 
+    // use hooks
     const router = useRouter();
     const authStore = useAuthStore();
 
+    // methods
     const handleSignOut = async () => {
         await authStore.signOut();
         await router.replace({ name: 'sign-in' });

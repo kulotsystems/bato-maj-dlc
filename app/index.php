@@ -42,11 +42,8 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
                 'user' => $userData
             ]);
         }
-        else {
-            echo json_encode([
-                'error' => 'Incorrect username or password'
-            ]);
-        }
+        else
+            App::returnError('HTTP/1.1 401', 'Invalid Username or Password');
     }
 
     // user sign out

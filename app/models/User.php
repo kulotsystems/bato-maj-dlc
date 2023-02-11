@@ -8,6 +8,7 @@ class User extends App
     protected $password;
     protected $fullName;
     protected $avatar;
+    protected $number;
     protected $table;
     protected $userType;
 
@@ -28,7 +29,7 @@ class User extends App
 
     public function signIn()
     {
-        $stmt = $this->conn->prepare("SELECT username, password, fullname, avatar FROM users_$this->userType WHERE username = ? AND password = ?");
+        $stmt = $this->conn->prepare("SELECT username, password, fullname, avatar, number FROM $this->table WHERE username = ? AND password = ?");
         $stmt->bind_param("ss", $this->username, $this->password);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -36,6 +37,7 @@ class User extends App
             $row = $result->fetch_assoc();
             $this->fullName = $row['fullname'];
             $this->avatar = $row['avatar'];
+            $this->number = $row['number'];
             return $this;
         }
         return false;
@@ -47,6 +49,7 @@ class User extends App
             'username' => $this->username,
             'fullName' => $this->fullName,
             'avatar'   => $this->avatar,
+            'number'   => $this->number,
             'userType' => $this->userType,
         ];
     }

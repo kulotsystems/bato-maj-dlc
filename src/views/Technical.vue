@@ -1,10 +1,6 @@
 <template>
     <div>
-        <h1>Technical</h1>
-        <div v-if="authStore.user">
-            <p>{{ authStore.user.fullName }}</p>
-            <button @click="handleSignOut">Sign out</button>
-        </div>
+
     </div>
 </template>
 
