@@ -5,6 +5,9 @@ export const useStore = defineStore('store', {
     state: () => ({
         app: {
             backendDir: 'app'
+        },
+        window: {
+            height: 0
         }
     }),
 
@@ -20,7 +23,7 @@ export const useStore = defineStore('store', {
             if(location.hostname == 'localhost' && location.port == '5175')
                 return `http://localhost${import.meta.env.BASE_URL}${this.app.backendDir}`;
             else
-                return `${this.app.backendDir}`;
+                return `${location.protocol}//${location.hostname}${import.meta.env.BASE_URL}${this.app.backendDir}`;
         }
     },
 
@@ -46,6 +49,11 @@ export const useStore = defineStore('store', {
                 .catch(error => {
                     return { error: error.message }
                 });
+        },
+
+        // set window height
+        setWindowHeight(height: number) {
+            this.window.height = height;
         }
     }
 });

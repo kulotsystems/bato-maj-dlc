@@ -27,3 +27,5 @@ public-ssr
 *.njsproj
 *.sln
 *.sw?
+
+app/test.php

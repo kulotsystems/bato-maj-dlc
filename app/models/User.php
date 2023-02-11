@@ -4,6 +4,7 @@ require_once 'App.php';
 
 class User extends App
 {
+    protected $id = null;
     protected $username;
     protected $password;
     protected $fullName;
@@ -13,13 +14,26 @@ class User extends App
     protected $userType;
 
 
-    public function __construct($username, $password, $table, $userType)
+    public function __construct($username, $password, $userType)
     {
         parent::__construct();
         $this->username = $username;
         $this->password = $password;
-        $this->table = $table;
+        $this->table    = 'users_'.$userType;
         $this->userType = $userType;
+
+        // get other info
+        $stmt = $this->conn->prepare("SELECT * FROM $this->table WHERE username = ? AND password = ?");
+        $stmt->bind_param("ss", $this->username, $this->password);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $this->id = $row['id'];
+            $this->fullName = $row['fullname'];
+            $this->avatar = $row['avatar'];
+            $this->number = $row['number'];
+        }
     }
 
 
@@ -30,7 +44,6 @@ class User extends App
             $authenticated = (new User(
                 $_SESSION['user']['username'],
                 $_SESSION['pass'],
-                'users_'.$_SESSION['user']['userType'],
                 $_SESSION['user']['userType']
             ))->signIn();
 
@@ -43,18 +56,15 @@ class User extends App
     }
 
 
+    public function authenticated()
+    {
+        return (bool)$this->id;
+    }
+
+
     public function signIn()
     {
-        $stmt = $this->conn->prepare("SELECT username, password, fullname, avatar, number FROM $this->table WHERE username = ? AND password = ?");
-        $stmt->bind_param("ss", $this->username, $this->password);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $this->fullName = $row['fullname'];
-            $this->avatar = $row['avatar'];
-            $this->number = $row['number'];
-
+        if($this->authenticated()) {
             $_SESSION['user'] = $this->getInfo();
             $_SESSION['pass'] = $this->password;
             return $this;
@@ -66,6 +76,7 @@ class User extends App
     public function getInfo()
     {
         return [
+            'id'       => $this->id,
             'username' => $this->username,
             'fullName' => $this->fullName,
             'avatar'   => $this->avatar,
