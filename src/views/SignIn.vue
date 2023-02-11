@@ -40,11 +40,13 @@
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
     import { useRouter } from 'vue-router';
-    import { useAuthStore } from '../store/auth';
+    import { useAuthStore } from '../store/store-auth';
+    import { usePortionStore } from '../store/store-portion';
 
     // use hooks
     const router = useRouter();
     const authStore = useAuthStore();
+    const portionStore = usePortionStore();
 
 
     // state
@@ -69,8 +71,14 @@
         if (enteredUsername.value != '' && enteredPassword.value != '') {
             loading.value = true;
             await authStore.signIn(enteredUsername.value, enteredPassword.value)
-            if (authStore.user)
-                await router.replace({name: authStore.user.userType});
+            if (authStore.user) {
+                await router.replace({
+                    name: authStore.user.userType,
+                    params: {
+                        portion: portionStore.activePortion
+                    }
+                });
+            }
             loading.value = false;
         }
     };

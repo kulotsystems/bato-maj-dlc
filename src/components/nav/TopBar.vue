@@ -39,8 +39,8 @@
 <script lang="ts" setup>
     import { ref } from 'vue';
     import { useRouter, useRoute } from 'vue-router';
-    import { useStore } from '../../store';
-    import { useAuthStore } from '../../store/auth';
+    import { useStore } from '../../store/store';
+    import { useAuthStore } from '../../store/store-auth';
 
     // use hooks
     const router = useRouter();

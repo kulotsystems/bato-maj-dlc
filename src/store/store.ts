@@ -43,6 +43,9 @@ export const useStore = defineStore('store', {
             // request
             return await fetch(input, init)
                 .then(response => response.json())
+                .catch(error => {
+                    return { error: error.message }
+                });
         }
     }
 });

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useStore } from './index';
+import { useStore } from './store';
 import { UserType } from '../types/User.type';
 
 export const useAuthStore = defineStore('authStore', {
@@ -26,9 +26,11 @@ export const useAuthStore = defineStore('authStore', {
         async getUser() {
             await useStore().requestAsync('GET', null, 'getUser')
                 .then(result => {
-                    this.user = result.user;
-                })
-                .catch(error => console.log('Error in getting user: ', error));
+                    if(result.error)
+                        this.error = result.error;
+                    else
+                        this.user = result.user;
+                });
         },
 
         // handle sign in
@@ -52,10 +54,11 @@ export const useAuthStore = defineStore('authStore', {
                 signOut: true
             })
                 .then(result => {
-                    this.user = null;
-                })
-                .catch(error => console.log('Error in signing out: ', error));
-
+                    if(result.error)
+                        this.error = result.error;
+                    else
+                        this.user = null;
+                });
         }
     }
 });
