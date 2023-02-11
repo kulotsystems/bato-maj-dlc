@@ -6,14 +6,10 @@ class App
 
     public function __construct()
     {
-        // connect to the database
-        $env_db = ENV['database'];
-        $this->conn = new mysqli($env_db['host'], $env_db['user'], $env_db['pass'], $env_db['dbname']);
-
-        // check connection
-        if($this->conn->connect_error) {
-            die('connection failed: ' . $this->conn->connect_error);
-        }
+        if(isset($GLOBALS['conn']))
+            $this->conn = $GLOBALS['conn'];
+        else
+            $this::returnError('HTTP/1.1 500', 'Missing database connection configuration.');
     }
 
 

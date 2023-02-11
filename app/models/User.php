@@ -22,10 +22,26 @@ class User extends App
         $this->userType = $userType;
     }
 
+
     public static function getUser()
     {
-        return isset($_SESSION['user']) ? $_SESSION['user'] : null;
+        $user_info = null;
+        if(isset($_SESSION['user']) && isset($_SESSION['pass'])) {
+            $authenticated = (new User(
+                $_SESSION['user']['username'],
+                $_SESSION['pass'],
+                'users_'.$_SESSION['user']['userType'],
+                $_SESSION['user']['userType']
+            ))->signIn();
+
+            if($authenticated)
+                $user_info = $authenticated->getInfo();
+            else
+                session_destroy();
+        }
+        return $user_info;
     }
+
 
     public function signIn()
     {
@@ -38,10 +54,14 @@ class User extends App
             $this->fullName = $row['fullname'];
             $this->avatar = $row['avatar'];
             $this->number = $row['number'];
+
+            $_SESSION['user'] = $this->getInfo();
+            $_SESSION['pass'] = $this->password;
             return $this;
         }
         return false;
     }
+
 
     public function getInfo()
     {

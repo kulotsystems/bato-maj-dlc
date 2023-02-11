@@ -1,10 +1,10 @@
 <?php
-session_start();
 header('Access-Control-Allow-Origin: http://localhost:5175');
 header("Access-Control-Allow-Credentials: true");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
-require_once 'config/env.php';
+session_start();
+require_once 'config/database.php';
 
 if(isset($_GET['getUser']))
 {
@@ -24,7 +24,7 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
 
         // todo: validate input
         $username = trim(strtolower($POST['username']));
-        $password = trim(strtolower($POST['password']));
+        $password = $POST['password'];
 
         $user = (new Admin($username, $password))->signIn();
         if(!$user) {
@@ -34,12 +34,9 @@ else if($POST = json_decode(file_get_contents('php://input'), true))
         }
 
         if($user) {
-            $userData = $user->getInfo();
-            $_SESSION['user'] = $userData;
-
             // successfully logged in
             echo json_encode([
-                'user' => $userData
+                'user' => $user->getInfo()
             ]);
         }
         else
