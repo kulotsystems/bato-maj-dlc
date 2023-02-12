@@ -48,7 +48,7 @@
                            single-line
                            variant="underlined"
                            v-model.number="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value"
-                           :disabled="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked === 1"
+                           :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
                        />
                     </td>
                     <td>
