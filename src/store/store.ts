@@ -6,6 +6,9 @@ export const useStore = defineStore('store', {
         app: {
             backendDir: 'app'
         },
+        sidebar: {
+            opened: false
+        },
         window: {
             height: 0
         },
@@ -53,6 +56,11 @@ export const useStore = defineStore('store', {
                 .catch(error => {
                     return { error: error.message }
                 });
+        },
+
+        // open or hide sidebar
+        toggleSidebar(bool: boolean) {
+            this.sidebar.opened = bool;
         },
 
         // set window height
