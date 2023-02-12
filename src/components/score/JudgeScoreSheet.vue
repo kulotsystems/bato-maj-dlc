@@ -69,8 +69,14 @@
                                 'text-grey': scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == 0
                             }"
                            :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
-                           @keyup="handleRatingKeyUp(contingent.id)"
+                           :id="`input_${contingentIndex}_${criteriaIndex}`"
                            @change="handleRatingChange(contingent.id, criteria)"
+                           @keyup.prevent="handleRatingKeyUp(contingent.id)"
+                           @keydown.down.prevent="moveDown(criteriaIndex, contingentIndex)"
+                           @keydown.enter="moveDown(criteriaIndex, contingentIndex)"
+                           @keydown.up.prevent="moveUp(criteriaIndex, contingentIndex)"
+                           @keydown.right.prevent="moveRight(criteriaIndex, contingentIndex)"
+                           @keydown.left.prevent="moveLeft(criteriaIndex, contingentIndex)"
                        />
                     </td>
                     <td>
@@ -95,7 +101,13 @@
                             }"
                             :disabled="scoreTotals[`t_${contingent.id}`].is_locked == 1"
                             :loading="scoreTotals[`t_${contingent.id}`].loading"
+                            :id="`input_${contingentIndex}_${scoreSheet.criteria.length}`"
                             @change="handleTotalChange(contingent.id)"
+                            @keydown.down.prevent="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.enter="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.up.prevent="moveUp(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.right.prevent="moveRight(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.left.prevent="moveLeft(scoreSheet.criteria.length, contingentIndex)"
                         />
                     </td>
                 </tr>
@@ -135,7 +147,7 @@
 
 
 <script lang="ts" setup>
-    import { computed, reactive, onMounted } from 'vue';
+    import { ref, computed, reactive, onMounted } from 'vue';
     import { useStore } from '../../store/store';
     import { usePortionStore } from '../../store/store-portion';
     import { PortionKeyType } from '../../types/Portion.type';
@@ -298,6 +310,42 @@
                     }, 1000);
                 }
             });
+    };
+
+
+    const move = (x: number, y: number) => {
+        // move to input
+        const nextInput = document.querySelector(`#input_${y}_${x}`) as HTMLInputElement;
+        if(nextInput)
+            nextInput.focus();
+    }
+
+    const moveDown = (x: number, y: number) => {
+        // move to input below
+        y += 1;
+        if(y < scoreSheet.contingents.length)
+            move(x, y);
+    };
+
+    const moveUp = (x: number, y: number) => {
+        // move to input above
+        y -= 1;
+        if(y >= 0)
+            move(x, y);
+    };
+
+    const moveRight = (x: number, y: number) => {
+        // move to input to the right
+        x += 1;
+        if(x <= scoreSheet.criteria.length)
+            move(x, y);
+    };
+
+    const moveLeft = (x: number, y: number) => {
+        // move to input to the left
+        x -= 1;
+        if(x >= 0)
+            move(x, y);
     };
 
 
