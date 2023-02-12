@@ -13,7 +13,9 @@
                 <tr>
                     <th colspan="2" class="py-2">
                         <div class="h-100 d-flex justify-center align-center">
-                            <div class="text-h6 text-primary">CONTINGENT</div>
+                            <div class="text-h6 text-primary text-uppercase font-weight-bold">
+                                {{ portionStore.portions[portion].title }}
+                            </div>
                         </div>
                     </th>
                     <th
@@ -98,9 +100,9 @@
 <script lang="ts" setup>
     import { computed, reactive, onMounted } from 'vue';
     import { useStore } from '../../store/store';
+    import { usePortionStore } from '../../store/store-portion';
     import { PortionKeyType } from '../../types/Portion.type';
     import { ScoreSheetType } from '../../types/ScoreSheet.type';
-    import { RatingType } from '../../types/Rating.type';
 
 
     // props
@@ -112,6 +114,7 @@
 
     // use hooks
     const store = useStore();
+    const portionStore = usePortionStore();
 
 
     // state
