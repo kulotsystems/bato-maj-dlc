@@ -23,13 +23,17 @@
                         :key="criteria.id"
                         class="py-2 text-center"
                         style="width: 15%"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
                     >
                         <div class="d-flex h-100 flex-column align-content-space-between">
                             <div class="text-subtitle-2 text-primary">{{ criteria.title }}</div>
                             <div class="text-body-1 text-primary font-weight-bold" style="margin-top: auto">{{ criteria.percentage }}</div>
                         </div>
                     </th>
-                    <th class="py-2" style="width: 15%">
+                    <th
+                        class="py-2" style="width: 15%"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }"
+                    >
                         <div class="h-100 d-flex justify-center align-center">
                             <div class="text-h6 text-primary">TOTAL</div>
                         </div>
@@ -39,10 +43,18 @@
 
             <!-- table body -->
             <tbody>
-                <tr v-for="(contingent, contingentIndex) in scoreSheet.contingents" :key="contingent.id">
+                <tr
+                    v-for="(contingent, contingentIndex) in scoreSheet.contingents"
+                    :key="contingent.id"
+                    :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex }"
+                >
                     <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
                     <td class="text-subtitle-2">{{ contingent.school }}</td>
-                    <td v-for="(criteria, criteriaIndex) in scoreSheet.criteria" :key="criteria.id">
+                    <td
+                        v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
+                        :key="criteria.id"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
+                    >
                        <v-text-field
                            type="number"
                            class="ma-0"
@@ -69,11 +81,18 @@
                                 'text-grey': scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == 0
                             }"
                            :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
-                           @keyup="handleRatingKeyUp(contingent.id)"
+                           :id="`input_${contingentIndex}_${criteriaIndex}`"
                            @change="handleRatingChange(contingent.id, criteria)"
+                           @keyup.prevent="handleRatingKeyUp(contingent.id)"
+                           @keydown.down.prevent="moveDown(criteriaIndex, contingentIndex)"
+                           @keydown.enter="moveDown(criteriaIndex, contingentIndex)"
+                           @keydown.up.prevent="moveUp(criteriaIndex, contingentIndex)"
+                           @keydown.right.prevent="moveRight(criteriaIndex, contingentIndex)"
+                           @keydown.left.prevent="moveLeft(criteriaIndex, contingentIndex)"
+                           @focus.passive="updateCoordinates(criteriaIndex, contingentIndex)"
                        />
                     </td>
-                    <td>
+                    <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }">
                         <v-text-field
                             type="number"
                             class="ma-0 font-weight-bold"
@@ -95,7 +114,14 @@
                             }"
                             :disabled="scoreTotals[`t_${contingent.id}`].is_locked == 1"
                             :loading="scoreTotals[`t_${contingent.id}`].loading"
+                            :id="`input_${contingentIndex}_${scoreSheet.criteria.length}`"
                             @change="handleTotalChange(contingent.id)"
+                            @keydown.down.prevent="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.enter="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.up.prevent="moveUp(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.right.prevent="moveRight(scoreSheet.criteria.length, contingentIndex)"
+                            @keydown.left.prevent="moveLeft(scoreSheet.criteria.length, contingentIndex)"
+                            @focus.passive="updateCoordinates(scoreSheet.criteria.length, contingentIndex)"
                         />
                     </td>
                 </tr>
@@ -170,7 +196,10 @@
         ready      : false,
     });
     const scoreTotals = reactive<RatingTotalsType>({});
-
+    const coordinates = reactive({
+        x: -1,
+        y: -1
+    });
 
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
@@ -298,6 +327,52 @@
                     }, 1000);
                 }
             });
+    };
+
+
+    const move = (x: number, y: number, focus: boolean = true) => {
+        // move to input
+        const nextInput = document.querySelector(`#input_${y}_${x}`) as HTMLInputElement;
+        if(nextInput) {
+            if(focus)
+                nextInput.focus();
+            if(Number(nextInput.value) <= 0)
+                nextInput.select();
+        }
+    }
+
+    const moveDown = (x: number, y: number) => {
+        // move to input below
+        y += 1;
+        if(y < scoreSheet.contingents.length)
+            move(x, y);
+    };
+
+    const moveUp = (x: number, y: number) => {
+        // move to input above
+        y -= 1;
+        if(y >= 0)
+            move(x, y);
+    };
+
+    const moveRight = (x: number, y: number) => {
+        // move to input to the right
+        x += 1;
+        if(x <= scoreSheet.criteria.length)
+            move(x, y);
+    };
+
+    const moveLeft = (x: number, y: number) => {
+        // move to input to the left
+        x -= 1;
+        if(x >= 0)
+            move(x, y);
+    };
+
+    const updateCoordinates = (x: number, y: number) => {
+        coordinates.x = x;
+        coordinates.y = y;
+        move(x, y, false);
     };
 
 
