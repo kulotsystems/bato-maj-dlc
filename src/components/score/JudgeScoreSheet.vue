@@ -65,7 +65,8 @@
                                 'text-error font-weight-bold': (
                                        scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
                                     || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
-                                )
+                                ),
+                                'text-grey': scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == 0
                             }"
                            :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
                            @keyup="handleRatingKeyUp(contingent.id)"
@@ -82,11 +83,6 @@
                             :min="store.rating.min"
                             :max="store.rating.max"
                             v-model.number="scoreTotals[`t_${contingent.id}`].value"
-                            :error="(
-                                  scoreTotals[`t_${contingent.id}`].value.toString().trim() === ''
-                               || scoreTotals[`t_${contingent.id}`].value < store.rating.min
-                               || scoreTotals[`t_${contingent.id}`].value > store.rating.max
-                           )"
                             :class="{
                                 'text-error': (
                                        scoreTotals[`t_${contingent.id}`].value < store.rating.min
@@ -97,12 +93,8 @@
                                     && scoreTotals[`t_${contingent.id}`].value <= store.rating.max
                                 )
                             }"
-                            :prepend-inner-icon="
-                                    scoreTotals[`t_${contingent.id}`].value >= store.rating.min
-                                 && scoreTotals[`t_${contingent.id}`].value <= store.rating.max
-                                 ? 'mdi-check-circle' : 'mdi-close-circle'
-                            "
                             :disabled="scoreTotals[`t_${contingent.id}`].is_locked == 1"
+                            :loading="scoreTotals[`t_${contingent.id}`].loading"
                             @change="handleTotalChange(contingent.id)"
                         />
                     </td>
@@ -114,10 +106,11 @@
                 <tr><th colspan="7"></th></tr>
                 <tr>
                     <th colspan="7">
-                        <div class="d-flex justify-end">
+                        <div class="d-flex justify-end py-5">
                             <v-btn
                                 color="primary"
-                                size="large"
+                                size="x-large"
+                                variant="tonal"
                                 block
                             >
                                 Submit Ratings
@@ -148,8 +141,13 @@
     import { PortionKeyType } from '../../types/Portion.type';
     import { ScoreSheetType } from '../../types/ScoreSheet.type';
     import { ContingentIDType } from '../../types/Contingent.type';
-    import { RatingValueType, RatingIsLockedType, RatingTotalsType } from '../../types/Rating.type';
-    import { CriteriaIDType, CriteriaType } from '../../types/Criteria.type';
+    import {
+        RatingValueType,
+        RatingIsLockedType,
+        RatingTotalsType,
+        RatingPayloadType
+    } from '../../types/Rating.type';
+    import { CriteriaType } from '../../types/Criteria.type';
 
 
     // props
@@ -200,7 +198,8 @@
                     }
                     scoreTotals[`t_${contingent.id}`] = {
                         value: totalValue as RatingValueType,
-                        is_locked: totalLocked as RatingIsLockedType
+                        is_locked: totalLocked as RatingIsLockedType,
+                        loading: false
                     };
                 }
 
@@ -223,6 +222,9 @@
 
         // recompute
         handleRatingKeyUp(contingentID);
+
+        // send
+        sendRatings(contingentID);
     };
 
 
@@ -246,6 +248,9 @@
             const criteria = scoreSheet.criteria[i];
             scoreSheet.ratings[`${contingentID}_${criteria.id}`].value = enteredTotal * (criteria.percentage / 100);
         }
+
+        // send
+        sendRatings(contingentID);
     };
 
 
@@ -257,6 +262,42 @@
             total += Number(scoreSheet.ratings[`${contingentID}_${criteria.id}`].value);
         }
         scoreTotals[`t_${contingentID}`].value = total;
+    };
+
+
+    const sendRatings = async (contingentID: ContingentIDType) => {
+        // start loading
+        const scoreTotal = scoreTotals[`t_${contingentID}`];
+        scoreTotal.loading = true;
+
+        // prepare payload
+        const ratings: RatingPayloadType = {
+            portion: props.portion,
+            contingentID,
+            judgeID: 0,
+            values: []
+        };
+
+        for(let i=0; i<scoreSheet.criteria.length; i++) {
+            const criteria = scoreSheet.criteria[i];
+            const rating   = scoreSheet.ratings[`${contingentID}_${criteria.id}`];
+            ratings.judgeID = rating.judge_id;
+            ratings.values.push({
+                criteriaID: criteria.id,
+                value: rating.value
+            });
+        }
+
+        // make request
+        await store.requestAsync('POST', { ratings }, '', 'judge.php')
+            .then(result => {
+                // stop loading
+                if(scoreTotal.loading) {
+                    setTimeout(() => {
+                        scoreTotal.loading = false;
+                    }, 1000);
+                }
+            });
     };
 
 

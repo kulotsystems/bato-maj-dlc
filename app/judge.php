@@ -27,6 +27,28 @@ else {
         }
     }
 
+    // post requests
+    else if($POST = json_decode(file_get_contents('php://input'), true)) {
+        require_once 'models/Judge.php';
+        $judge = new Judge($authUser['username'], $_SESSION['pass']);
+
+        if(!$judge->authenticated())
+            denyAccess();
+
+        else {
+            // submit ratings
+            if(isset($POST['ratings'])) {
+                $ratings = $POST['ratings'];
+
+                if($ratings['judgeID'] != $authUser['id'])
+                    denyAccess();
+
+                else
+                    $judge->storeRatings($ratings);
+            }
+        }
+    }
+
     else
         denyAccess();
 }
