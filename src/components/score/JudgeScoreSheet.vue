@@ -38,6 +38,11 @@
                             <div class="text-h6 text-primary">TOTAL</div>
                         </div>
                     </th>
+                    <th>
+                        <div class="h-100 d-flex justify-center align-center">
+                            <div class="text-h6 text-primary">RANK</div>
+                        </div>
+                    </th>
                 </tr>
             </thead>
 
@@ -124,14 +129,16 @@
                             @focus.passive="updateCoordinates(scoreSheet.criteria.length, contingentIndex)"
                         />
                     </td>
+                    <td class="text-center text-primary">
+                        {{ ranks[`t_${contingent.id}`] }}
+                    </td>
                 </tr>
             </tbody>
 
             <!-- table footer -->
             <tfoot>
-                <tr><th colspan="7"></th></tr>
                 <tr>
-                    <th colspan="7">
+                    <th colspan="8">
                         <div class="d-flex justify-end py-5">
                             <v-btn
                                 color="primary"
@@ -161,22 +168,24 @@
 
 
 <script lang="ts" setup>
-    import { computed, reactive, onMounted } from 'vue';
-    import { useStore } from '../../store/store';
-    import { usePortionStore } from '../../store/store-portion';
-    import { PortionKeyType } from '../../types/Portion.type';
-    import { ScoreSheetType } from '../../types/ScoreSheet.type';
-    import { ContingentIDType } from '../../types/Contingent.type';
-    import {
-        RatingValueType,
-        RatingIsLockedType,
-        RatingTotalsType,
-        RatingPayloadType
-    } from '../../types/Rating.type';
-    import { CriteriaType } from '../../types/Criteria.type';
+import _ from 'lodash';
+import { computed, onMounted, reactive } from 'vue';
+import { useStore } from '../../store/store';
+import { usePortionStore } from '../../store/store-portion';
+import { PortionKeyType } from '../../types/Portion.type';
+import { ScoreSheetType } from '../../types/ScoreSheet.type';
+import { ContingentIDType } from '../../types/Contingent.type';
+import {
+    RatingIsLockedType,
+    RatingPayloadType,
+    RatingTotalsType,
+    RatingTotalType,
+    RatingValueType
+} from '../../types/Rating.type';
+import { CriteriaType } from '../../types/Criteria.type';
 
 
-    // props
+// props
     interface ScoreSheetProps {
         portion: PortionKeyType
     }
@@ -201,8 +210,42 @@
         y: -1
     });
 
+
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
+    const ranks = computed(() => {
+        // get the values of the 'value' property from each object in 'scoreTotals' object
+        const scores = _.map(scoreTotals, (obj: RatingTotalType) => obj.value);
+
+        // sort the 'scores' array in descending order
+        const sortedScores = _.sortBy(scores, (score: number) => score).reverse();
+
+        // create a map of scores to their ranks
+        const scoreRankMap = _.reduce(
+            sortedScores,
+            (result: { [key: number]: number[] }, score: number, index: number) => {
+                // if the score is not already present in the 'result' object, create an empty array
+                result[score] = result[score] || [];
+                // push the rank (index + 1) to the array of scores
+                result[score].push(index + 1);
+                return result;
+            },
+            {}
+        );
+
+        // compute the average rank of each score
+        return _.reduce(
+            scoreTotals,
+            (result: { [key: string]: number }, obj: RatingTotalType, key: string) => {
+                const score = obj.value;
+                const ranks = scoreRankMap[score];
+                // add the average rank for the current score to the 'result' object
+                result[key] = _.sum(ranks) / ranks.length;
+                return result;
+            },
+            {}
+        );
+    });
 
 
     // methods
