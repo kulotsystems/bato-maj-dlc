@@ -23,13 +23,17 @@
                         :key="criteria.id"
                         class="py-2 text-center"
                         style="width: 15%"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
                     >
                         <div class="d-flex h-100 flex-column align-content-space-between">
                             <div class="text-subtitle-2 text-primary">{{ criteria.title }}</div>
                             <div class="text-body-1 text-primary font-weight-bold" style="margin-top: auto">{{ criteria.percentage }}</div>
                         </div>
                     </th>
-                    <th class="py-2" style="width: 15%">
+                    <th
+                        class="py-2" style="width: 15%"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }"
+                    >
                         <div class="h-100 d-flex justify-center align-center">
                             <div class="text-h6 text-primary">TOTAL</div>
                         </div>
@@ -39,10 +43,18 @@
 
             <!-- table body -->
             <tbody>
-                <tr v-for="(contingent, contingentIndex) in scoreSheet.contingents" :key="contingent.id">
+                <tr
+                    v-for="(contingent, contingentIndex) in scoreSheet.contingents"
+                    :key="contingent.id"
+                    :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex }"
+                >
                     <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
                     <td class="text-subtitle-2">{{ contingent.school }}</td>
-                    <td v-for="(criteria, criteriaIndex) in scoreSheet.criteria" :key="criteria.id">
+                    <td
+                        v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
+                        :key="criteria.id"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
+                    >
                        <v-text-field
                            type="number"
                            class="ma-0"
@@ -77,9 +89,10 @@
                            @keydown.up.prevent="moveUp(criteriaIndex, contingentIndex)"
                            @keydown.right.prevent="moveRight(criteriaIndex, contingentIndex)"
                            @keydown.left.prevent="moveLeft(criteriaIndex, contingentIndex)"
+                           @focus.passive="updateCoordinates(criteriaIndex, contingentIndex)"
                        />
                     </td>
-                    <td>
+                    <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }">
                         <v-text-field
                             type="number"
                             class="ma-0 font-weight-bold"
@@ -108,6 +121,7 @@
                             @keydown.up.prevent="moveUp(scoreSheet.criteria.length, contingentIndex)"
                             @keydown.right.prevent="moveRight(scoreSheet.criteria.length, contingentIndex)"
                             @keydown.left.prevent="moveLeft(scoreSheet.criteria.length, contingentIndex)"
+                            @focus.passive="updateCoordinates(scoreSheet.criteria.length, contingentIndex)"
                         />
                     </td>
                 </tr>
@@ -147,7 +161,7 @@
 
 
 <script lang="ts" setup>
-    import { ref, computed, reactive, onMounted } from 'vue';
+    import { computed, reactive, onMounted } from 'vue';
     import { useStore } from '../../store/store';
     import { usePortionStore } from '../../store/store-portion';
     import { PortionKeyType } from '../../types/Portion.type';
@@ -182,7 +196,10 @@
         ready      : false,
     });
     const scoreTotals = reactive<RatingTotalsType>({});
-
+    const coordinates = reactive({
+        x: -1,
+        y: -1
+    });
 
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
@@ -313,11 +330,15 @@
     };
 
 
-    const move = (x: number, y: number) => {
+    const move = (x: number, y: number, focus: boolean = true) => {
         // move to input
         const nextInput = document.querySelector(`#input_${y}_${x}`) as HTMLInputElement;
-        if(nextInput)
-            nextInput.focus();
+        if(nextInput) {
+            if(focus)
+                nextInput.focus();
+            if(Number(nextInput.value) <= 0)
+                nextInput.select();
+        }
     }
 
     const moveDown = (x: number, y: number) => {
@@ -346,6 +367,12 @@
         x -= 1;
         if(x >= 0)
             move(x, y);
+    };
+
+    const updateCoordinates = (x: number, y: number) => {
+        coordinates.x = x;
+        coordinates.y = y;
+        move(x, y, false);
     };
 
 
