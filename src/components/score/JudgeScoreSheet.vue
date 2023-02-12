@@ -212,10 +212,14 @@
     const handleRatingChange = (contingentID: ContingentIDType, criteria: CriteriaType) => {
         // validate entered rating
         let enteredRating = Number(scoreSheet.ratings[`${contingentID}_${criteria.id}`].value);
-        if(enteredRating < 0)
+        if(enteredRating < 0) {
             scoreSheet.ratings[`${contingentID}_${criteria.id}`].value = 0;
-        else if(enteredRating > criteria.percentage)
+            enteredRating = 0;
+        }
+        else if(enteredRating > criteria.percentage) {
             scoreSheet.ratings[`${contingentID}_${criteria.id}`].value = criteria.percentage;
+            enteredRating = criteria.percentage;
+        }
 
         // recompute
         handleRatingKeyUp(contingentID);
@@ -229,11 +233,11 @@
         if(enteredTotal > 0) {
             if(enteredTotal < store.rating.min) {
                 scoreTotals[`t_${contingentID}`].value = store.rating.min;
-                handleTotalChange(contingentID);
+                enteredTotal = store.rating.min;
             }
             else if(enteredTotal > store.rating.max) {
                 scoreTotals[`t_${contingentID}`].value = store.rating.max;
-                handleTotalChange(contingentID);
+                enteredTotal = store.rating.max;
             }
         }
 
