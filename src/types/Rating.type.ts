@@ -6,7 +6,7 @@ export type RatingIDType = number;
 
 export type RatingValueType = number;
 
-export type RatingIsLockedType = number;
+export type RatingIsLockedType = 0 | 1;
 
 export type RatingType = {
     id: RatingIDType,
@@ -15,8 +15,17 @@ export type RatingType = {
     judge_id: UserIDType,
     criteria_id: CriteriaIDType,
     contingent_id: ContingentIDType
-}
+};
 
-export type RatingsType = null | {
+export type RatingsType = {
     [key: string]: RatingType
+};
+
+export type RatingTotalType = {
+    value: RatingValueType,
+    is_locked: RatingIsLockedType
+};
+
+export type RatingTotalsType = {
+    [key: string]: RatingTotalType // key: `t_${contingent_id}`
 }
