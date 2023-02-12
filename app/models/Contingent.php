@@ -87,7 +87,11 @@ class Contingent extends App
         ];
 
         // check if rating exists for judge
-        $result = $this->conn->query("SELECT id, value, is_locked FROM $this->table_rating WHERE judge_id = $judge_id AND criteria_id = $criteria_id AND contingent_id = $this->id");
+        $query = "SELECT id, value, is_locked FROM $this->table_rating WHERE judge_id = ? AND criteria_id = ? AND contingent_id = ?";
+        $stmt  = $this->conn->prepare($query);
+        $stmt->bind_param("iii", $judge_id, $criteria_id, $this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
         if($result->num_rows > 0) {
             // rating found
             $row = $result->fetch_assoc();
@@ -97,7 +101,10 @@ class Contingent extends App
         }
         else {
             // rating not found, insert it
-            $this->conn->query("INSERT INTO $this->table_rating (judge_id, criteria_id, contingent_id, value) VALUES ($judge_id, $criteria_id, $this->id, 0)");
+            $query = "INSERT INTO $this->table_rating (judge_id, criteria_id, contingent_id, value) VALUES (?, ?, ?, 0)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("iii", $judge_id, $criteria_id, $this->id);
+            $stmt->execute();
             $ratingInfo['id'] = $this->conn->insert_id;
         }
 
