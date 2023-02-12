@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2023 at 05:52 AM
+-- Generation Time: Feb 12, 2023 at 01:45 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -151,6 +151,7 @@ CREATE TABLE `deductions_dlc` (
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `technical_id` tinyint(3) UNSIGNED NOT NULL,
   `value` tinyint(3) UNSIGNED NOT NULL,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -166,6 +167,7 @@ CREATE TABLE `deductions_maj` (
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `technical_id` tinyint(3) UNSIGNED NOT NULL,
   `value` tinyint(3) UNSIGNED NOT NULL,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -182,6 +184,7 @@ CREATE TABLE `ratings_dlc` (
   `criteria_id` tinyint(4) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `value` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -198,6 +201,7 @@ CREATE TABLE `ratings_maj` (
   `criteria_id` tinyint(4) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `value` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

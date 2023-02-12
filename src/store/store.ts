@@ -8,6 +8,10 @@ export const useStore = defineStore('store', {
         },
         window: {
             height: 0
+        },
+        rating: {
+            max: 100,
+            min: 75
         }
     }),
 
