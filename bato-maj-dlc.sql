@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 12, 2023 at 01:45 AM
+-- Generation Time: Feb 12, 2023 at 12:54 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.1.12
 
@@ -101,7 +101,7 @@ INSERT INTO `contingents_maj` (`id`, `number`, `school`, `logo`, `is_active`, `c
 CREATE TABLE `criteria_dlc` (
   `id` tinyint(4) UNSIGNED NOT NULL,
   `title` varchar(255) NOT NULL,
-  `percentage` tinyint(3) UNSIGNED NOT NULL,
+  `percentage` float UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -125,7 +125,7 @@ INSERT INTO `criteria_dlc` (`id`, `title`, `percentage`, `created_at`, `updated_
 CREATE TABLE `criteria_maj` (
   `id` tinyint(4) UNSIGNED NOT NULL,
   `title` varchar(255) NOT NULL,
-  `percentage` tinyint(3) UNSIGNED NOT NULL,
+  `percentage` float UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -150,7 +150,7 @@ CREATE TABLE `deductions_dlc` (
   `id` tinyint(3) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `technical_id` tinyint(3) UNSIGNED NOT NULL,
-  `value` tinyint(3) UNSIGNED NOT NULL,
+  `value` float UNSIGNED NOT NULL,
   `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -166,7 +166,7 @@ CREATE TABLE `deductions_maj` (
   `id` tinyint(3) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
   `technical_id` tinyint(3) UNSIGNED NOT NULL,
-  `value` tinyint(3) UNSIGNED NOT NULL,
+  `value` float UNSIGNED NOT NULL,
   `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -183,7 +183,7 @@ CREATE TABLE `ratings_dlc` (
   `judge_id` tinyint(4) UNSIGNED NOT NULL,
   `criteria_id` tinyint(4) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
-  `value` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `value` float UNSIGNED NOT NULL DEFAULT 0,
   `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -200,7 +200,7 @@ CREATE TABLE `ratings_maj` (
   `judge_id` tinyint(4) UNSIGNED NOT NULL,
   `criteria_id` tinyint(4) UNSIGNED NOT NULL,
   `contingent_id` tinyint(4) UNSIGNED NOT NULL,
-  `value` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `value` float UNSIGNED NOT NULL DEFAULT 0,
   `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()

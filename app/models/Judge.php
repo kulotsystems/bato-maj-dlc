@@ -40,4 +40,19 @@ class Judge extends User
             'ratings'     => $ratings
         ];
     }
+
+
+    public function storeRatings($ratings)
+    {
+        require_once 'Majorette.php';
+        require_once 'DrumLyreCorps.php';
+
+        $contingent = $ratings['portion'] == 'maj'
+            ? new Majorette($ratings['contingentID'])
+            : new DrumLyreCorps($ratings['contingentID']);
+
+        foreach($ratings['values'] as $rating) {
+            $contingent->setRating($this->id, $rating['criteriaID'], $rating['value']);
+        }
+    }
 }

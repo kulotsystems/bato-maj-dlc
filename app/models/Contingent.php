@@ -88,7 +88,7 @@ class Contingent extends App
 
         // check if rating exists for judge
         $query = "SELECT id, value, is_locked FROM $this->table_rating WHERE judge_id = ? AND criteria_id = ? AND contingent_id = ?";
-        $stmt  = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
         $stmt->bind_param("iii", $judge_id, $criteria_id, $this->id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -110,4 +110,15 @@ class Contingent extends App
 
         return $ratingInfo;
     }
+
+
+    public function setRating($judge_id, $criteria_id, $value)
+    {
+        $query = "UPDATE $this->table_rating SET value = ? WHERE judge_id = ? AND criteria_id = ? AND contingent_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("diii", $value, $judge_id, $criteria_id, $this->id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
 }
