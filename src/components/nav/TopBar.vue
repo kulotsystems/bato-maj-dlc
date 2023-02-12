@@ -12,7 +12,7 @@
 
         <!-- append when there is a user -->
         <template v-if="authStore.user" v-slot:append>
-            <span v-if="$vuetify.display.smAndDown" class="text-button text-title">
+            <span v-if="$vuetify.display.smAndDown" class="text-button text-subtitle">
                 {{ route.meta.title }}
                 <template v-if="authStore.user">
                     {{ authStore.user?.number }}
@@ -70,5 +70,8 @@
 <style scoped>
     .text-title {
         font-size: 1.2rem !important;
+    }
+    .text-subtitle {
+        font-size: 1.1rem !important;
     }
 </style>
