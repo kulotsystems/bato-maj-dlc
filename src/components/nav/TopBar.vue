@@ -1,22 +1,27 @@
 <template>
     <v-app-bar color="primary">
+        <!-- sidebar toggle -->
+        <template v-if="$vuetify.display.smAndDown" v-slot:prepend>
+            <v-app-bar-nav-icon @click="store.toggleSidebar(!store.sidebar.opened)"/>
+        </template>
+
         <!-- title -->
-        <v-app-bar-title class="text-uppercase">
-            {{ route.meta.title }}
-            <template v-if="authStore.user">
-                {{ authStore.user?.number }}
-            </template>
+        <v-app-bar-title class="text-button text-lowercase text-title">
+            {{ store.appName }}
         </v-app-bar-title>
 
         <!-- append when there is a user -->
         <template v-if="authStore.user" v-slot:append>
-            <span class="text-uppercase">
-                {{ authStore.user?.fullName }}
+            <span v-if="$vuetify.display.smAndDown" class="text-button text-title">
+                {{ route.meta.title }}
+                <template v-if="authStore.user">
+                    {{ authStore.user?.number }}
+                </template>
             </span>
 
             <v-menu content-class="dropdown" offset-y transition="slide-y-transition">
                 <template v-slot:activator="{ props }">
-                    <v-btn icon variant="text" v-bind="props" size="small">
+                    <v-btn icon variant="text" v-bind="props">
                         <v-icon icon="mdi-dots-vertical"/>
                     </v-btn>
                 </template>
@@ -27,6 +32,7 @@
                         variant="text"
                         color="error"
                     >
+                        <v-icon icon="mdi-logout"/>
                         Sign out
                     </v-btn>
                 </v-list>
@@ -62,5 +68,7 @@
 
 
 <style scoped>
-
+    .text-title {
+        font-size: 1.2rem !important;
+    }
 </style>

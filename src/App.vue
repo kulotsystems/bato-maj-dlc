@@ -12,6 +12,7 @@
 <script lang="ts" setup>
     import { onMounted, nextTick, onBeforeUnmount } from 'vue';
     import { useRouter, useRoute } from 'vue-router';
+    import { useVuetify } from './hooks/vuetify';
     import { useStore } from './store/store';
     import { useAuthStore } from './store/store-auth';
     import { usePortionStore } from './store/store-portion';
@@ -57,6 +58,11 @@
             window.addEventListener('resize', handleWindowResize);
             handleWindowResize();
         });
+
+        // manage sidebar
+        const $vuetify = useVuetify();
+        if($vuetify?.display.mdAndUp)
+            store.toggleSidebar(true);
     });
 
 
