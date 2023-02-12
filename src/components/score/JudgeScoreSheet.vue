@@ -57,7 +57,7 @@
                                ? 'outlined' : 'underlined'
                            "
                            :error="(
-                                  scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == ''
+                                  scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value.toString().trim() === ''
                                || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
                                || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
                            )"
@@ -83,7 +83,7 @@
                             :max="store.rating.max"
                             v-model.number="scoreTotals[`t_${contingent.id}`].value"
                             :error="(
-                                  scoreTotals[`t_${contingent.id}`].value == ''
+                                  scoreTotals[`t_${contingent.id}`].value.toString().trim() === ''
                                || scoreTotals[`t_${contingent.id}`].value < store.rating.min
                                || scoreTotals[`t_${contingent.id}`].value > store.rating.max
                            )"
