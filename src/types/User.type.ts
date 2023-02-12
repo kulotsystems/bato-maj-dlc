@@ -1,7 +1,20 @@
+export type UserIDType = number;
+
+export type UserUserTypeType = 'admin' | 'judge' | 'technical';
+
+export type UserUsernameType = string;
+
+export type UserFullNameType = string;
+
+export type UserAvatarType = string;
+
+export type UserNumberType = number;
+
 export type UserType = null | {
-    userType: 'admin' | 'judge' | 'technical',
-    username: string,
-    fullName: string,
-    avatar  : string,
-    number  : number
+    id      : UserIDType,
+    userType: UserUserTypeType,
+    username: UserUsernameType,
+    fullName: UserFullNameType,
+    avatar  : UserAvatarType,
+    number  : UserNumberType
 };

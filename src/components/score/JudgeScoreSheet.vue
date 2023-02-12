@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- ratings table -->
         <v-table
             v-if="scoreSheet.ready"
             density="comfortable"
@@ -7,6 +8,7 @@
             hover
             :height="scoreSheetHeight"
         >
+            <!-- table header -->
             <thead>
                 <tr>
                     <th colspan="2" class="py-2">
@@ -33,6 +35,7 @@
                 </tr>
             </thead>
 
+            <!-- table body -->
             <tbody>
                 <tr v-for="(contingent, contingentIndex) in scoreSheet.contingents" :key="contingent.id">
                     <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
@@ -44,6 +47,8 @@
                            hide-details
                            single-line
                            variant="underlined"
+                           v-model.number="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value"
+                           :disabled="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked === 1"
                        />
                     </td>
                     <td>
@@ -57,6 +62,8 @@
                     </td>
                 </tr>
             </tbody>
+
+            <!-- table footer -->
             <tfoot>
                 <tr><th colspan="7"></th></tr>
                 <tr>
@@ -75,6 +82,7 @@
             </tfoot>
         </v-table>
 
+        <!-- loader -->
         <div v-else class="d-flex justify-center align-center" :style="{ height: `${scoreSheetHeight}px` }">
             <v-progress-circular
                 :size="80"
@@ -88,10 +96,11 @@
 
 
 <script lang="ts" setup>
-    import { ref, computed, reactive, onMounted } from 'vue';
+    import { computed, reactive, onMounted } from 'vue';
     import { useStore } from '../../store/store';
     import { PortionKeyType } from '../../types/Portion.type';
     import { ScoreSheetType } from '../../types/ScoreSheet.type';
+    import { RatingType } from '../../types/Rating.type';
 
 
     // props
@@ -108,8 +117,9 @@
     // state
     const scoreSheet = reactive<ScoreSheetType>({
         contingents: [],
-        criteria: [],
-        ready: false,
+        criteria   : [],
+        ratings    : null,
+        ready      : false,
     });
 
 
@@ -123,6 +133,7 @@
             .then(result => {
                 scoreSheet.contingents = result.contingents;
                 scoreSheet.criteria = result.criteria;
+                scoreSheet.ratings  = result.ratings;
                 scoreSheet.ready = true;
             });
     };

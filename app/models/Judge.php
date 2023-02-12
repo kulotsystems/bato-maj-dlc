@@ -10,19 +10,34 @@ class Judge extends User
     }
 
     /**
-     * @param $contingentType: 'maj' | 'dlc'
+     * @param $contingentType : 'maj' | 'dlc'
      */
     public function getScoreSheet($contingentType)
     {
-        require_once 'Contingent.php';
+        require_once 'Majorette.php';
+        require_once 'DrumLyreCorps.php';
 
-        $contingents = Contingent::all($contingentType);
-        $criteria    = Contingent::criteria($contingentType);
+        $contingentsInfos = Contingent::all($contingentType);
+        $criteriaInfos = Contingent::criteria($contingentType);
+        $ratings = [];
+        foreach($contingentsInfos as $contingentsInfo) {
+            // instantiate contingent
+            $contingent = $contingentType == 'maj'
+                ? new Majorette($contingentsInfo['id'])
+                : new DrumLyreCorps($contingentsInfo['id']);
 
+            // get ratings
+            foreach($criteriaInfos as $criteriaInfo) {
+                // key pattern: contingentID_criteriaID
+                $ratings[$contingentsInfo['id'].'_'.$criteriaInfo['id']]
+                    = $contingent->getRating($this->id, $criteriaInfo['id']);
+            }
+        }
 
         return [
-            'contingents' => $contingents,
-            'criteria'    => $criteria
+            'contingents' => $contingentsInfos,
+            'criteria'    => $criteriaInfos,
+            'ratings'     => $ratings
         ];
     }
 }
