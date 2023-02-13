@@ -36,7 +36,7 @@ else {
             denyAccess();
 
         else {
-            // submit ratings
+            // send ratings
             if(isset($POST['ratings'])) {
                 $ratings = $POST['ratings'];
 
@@ -45,6 +45,21 @@ else {
 
                 else
                     $judge->storeRatings($ratings);
+            }
+
+            // submit final ratings
+            else if(isset($POST['finalRatings'])) {
+                $finalRatings = $POST['finalRatings'];
+
+                if($finalRatings['judgeID'] != $authUser['id'])
+                    denyAccess();
+
+                else {
+                    foreach($finalRatings['rows'] as $ratings) {
+                        $ratings['portion'] = $finalRatings['portion'];
+                        $judge->storeRatings($ratings);
+                    }
+                }
             }
         }
     }

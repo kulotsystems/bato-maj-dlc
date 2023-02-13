@@ -22,7 +22,7 @@
                         v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
                         :key="criteria.id"
                         class="py-2 text-center"
-                        style="width: 15%"
+                        style="width: 13%"
                         :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
                     >
                         <div class="d-flex h-100 flex-column align-content-space-between">
@@ -31,7 +31,7 @@
                         </div>
                     </th>
                     <th
-                        class="py-2" style="width: 15%"
+                        class="py-2" style="width: 13%"
                         :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }"
                     >
                         <div class="h-100 d-flex justify-center align-center">
@@ -141,10 +141,12 @@
                     <th colspan="8">
                         <div class="d-flex justify-end py-5">
                             <v-btn
+                                @click="openSubmitRatingsDialog"
                                 color="primary"
                                 size="x-large"
                                 variant="tonal"
                                 block
+                                :disabled="scoreTotalsLoading"
                             >
                                 Submit Ratings
                             </v-btn>
@@ -163,29 +165,49 @@
                 class="mb-16"
             />
         </div>
+
+        <!-- dialogs -->
+        <dialog-submit-ratings
+            :opened="submitOpen"
+            :loading="submitLoading"
+            @close="closeSubmitRatingsDialog"
+            @submit="submitRatings"
+        />
+        <dialog-inspect-ratings
+            :opened="inspectOpen"
+            @close="inspectOpen = false"
+        />
     </div>
 </template>
 
 
 <script lang="ts" setup>
-import _ from 'lodash';
-import { computed, onMounted, reactive } from 'vue';
-import { useStore } from '../../store/store';
-import { usePortionStore } from '../../store/store-portion';
-import { PortionKeyType } from '../../types/Portion.type';
-import { ScoreSheetType } from '../../types/ScoreSheet.type';
-import { ContingentIDType } from '../../types/Contingent.type';
-import {
-    RatingIsLockedType,
-    RatingPayloadType,
-    RatingTotalsType,
-    RatingTotalType,
-    RatingValueType
-} from '../../types/Rating.type';
-import { CriteriaType } from '../../types/Criteria.type';
+    import _ from 'lodash';
+    import { ref, computed, onMounted, reactive } from 'vue';
+    import { useStore } from '../../store/store';
+    import { useAuthStore } from '../../store/store-auth';
+    import { usePortionStore } from '../../store/store-portion';
+    import { PortionKeyType } from '../../types/Portion.type';
+    import { ScoreSheetType } from '../../types/ScoreSheet.type';
+    import { ContingentIDType } from '../../types/Contingent.type';
+    import {
+        RatingIsLockedType,
+        RatingPayloadType,
+        RatingTotalsType,
+        RatingTotalType,
+        RatingValueType,
+        RatingFinalsRowPayloadType,
+        RatingFinalsPayloadType
+    } from '../../types/Rating.type';
+    import { CriteriaType } from '../../types/Criteria.type';
 
 
-// props
+    // components
+    import DialogSubmitRatings from '../../components/dialog/DialogSubmitRatings.vue';
+    import DialogInspectRatings from '../../components/dialog/DialogInspectRatings.vue';
+
+
+    // props
     interface ScoreSheetProps {
         portion: PortionKeyType
     }
@@ -194,6 +216,7 @@ import { CriteriaType } from '../../types/Criteria.type';
 
     // use hooks
     const store = useStore();
+    const authStore = useAuthStore();
     const portionStore = usePortionStore();
 
 
@@ -209,42 +232,45 @@ import { CriteriaType } from '../../types/Criteria.type';
         x: -1,
         y: -1
     });
+    const submitOpen    = ref(false);
+    const submitLoading = ref(false);
+    const inspectOpen   = ref(false);
 
 
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
+    const scoreTotalsLoading = computed(() => {
+        let loading = false;
+        for(const key in scoreTotals) {
+            if(scoreTotals[key].loading) {
+                loading = true;
+                break;
+            }
+        }
+        return loading;
+    });
     const ranks = computed(() => {
-        // get the values of the 'value' property from each object in 'scoreTotals' object
+        // get the value of the 'value' property from each object in the 'scoreTotals' object
         const scores = _.map(scoreTotals, (obj: RatingTotalType) => obj.value);
 
         // sort the 'scores' array in descending order
-        const sortedScores = _.sortBy(scores, (score: number) => score).reverse();
+        const sortedScores = _.sortBy(scores, (score: RatingValueType) => score).reverse();
 
         // create a map of scores to their ranks
-        const scoreRankMap = _.reduce(
-            sortedScores,
-            (result: { [key: number]: number[] }, score: number, index: number) => {
-                // if the score is not already present in the 'result' object, create an empty array
-                result[score] = result[score] || [];
-                // push the rank (index + 1) to the array of scores
-                result[score].push(index + 1);
-                return result;
-            },
-            {}
-        );
+        const scoreRankMap = _.reduce(sortedScores, (result: { [key: number]: number[] }, score: RatingValueType, index: number) => {
+            // if the score is not already in the 'result' object, create an empty array
+            result[score] = result[score] || [];
+            // add the rank (index + 1) to the array of scores
+            result[score].push(index + 1);
+            return result;
+        }, {});
 
         // compute the average rank of each score
-        return _.reduce(
-            scoreTotals,
-            (result: { [key: string]: number }, obj: RatingTotalType, key: string) => {
-                const score = obj.value;
-                const ranks = scoreRankMap[score];
-                // add the average rank for the current score to the 'result' object
-                result[key] = _.sum(ranks) / ranks.length;
-                return result;
-            },
-            {}
-        );
+        return _.mapValues(scoreTotals, (obj: RatingTotalType, key: string) => {
+            const score = obj.value;
+            const ranks = scoreRankMap[score];
+            return _.sum(ranks) / ranks.length;
+        });
     });
 
 
@@ -363,6 +389,11 @@ import { CriteriaType } from '../../types/Criteria.type';
         // make request
         await store.requestAsync('POST', { ratings }, '', 'judge.php')
             .then(result => {
+                if(result.error) {
+                    alert(result.error);
+                    window.location.reload();
+                }
+
                 // stop loading
                 if(scoreTotal.loading) {
                     setTimeout(() => {
@@ -371,6 +402,76 @@ import { CriteriaType } from '../../types/Criteria.type';
                 }
             });
     };
+
+
+    const submitRatings = async () => {
+        // start loading
+        submitLoading.value = true;
+
+        // prepare payload
+        const finalRatings: RatingFinalsPayloadType = {
+            portion: props.portion,
+            judgeID: scoreSheet.ratings[Object.keys(scoreSheet.ratings)[0]].judge_id,
+            rows: []
+        };
+        for(let i=0; i<scoreSheet.contingents.length; i++) {
+            const contingent = scoreSheet.contingents[i];
+            const row: RatingFinalsRowPayloadType = {
+                contingentID: contingent.id,
+                values: []
+            }
+            for(let j=0; j<scoreSheet.criteria.length; j++) {
+                const criteria = scoreSheet.criteria[j];
+                const rating   = scoreSheet.ratings[`${contingent.id}_${criteria.id}`];
+                row.values.push({
+                    criteriaID: criteria.id,
+                    value: rating.value
+                });
+            }
+            finalRatings.rows.push(row);
+        }
+
+
+        // submit final ratings
+        await store.requestAsync('POST', { finalRatings }, '', 'judge.php')
+            .then(result => {
+                if(result.error) {
+                    alert(result.error);
+                    window.location.reload();
+                }
+
+                // stop loading
+                if(submitLoading.value) {
+                    setTimeout(() => {
+                        submitLoading.value = false;
+                    }, 1100);
+                }
+            });
+    };
+
+
+    const openSubmitRatingsDialog = () => {
+        // check scoreTotals
+        if(!scoreTotalsLoading.value) {
+            let invalidTotalKey = null;
+            for (let key in scoreTotals) {
+                if (scoreTotals[key].is_locked === 0 && (scoreTotals[key].value < store.rating.min || scoreTotals[key].value > store.rating.max)) {
+                    invalidTotalKey = key
+                    break;
+                }
+            }
+            if(invalidTotalKey)
+                inspectOpen.value = true;
+            else
+                submitOpen.value = true;
+        }
+    }
+
+
+    const closeSubmitRatingsDialog = () => {
+        submitOpen.value = false;
+        submitLoading.value = false;
+    }
 
 
     const move = (x: number, y: number, focus: boolean = true) => {
