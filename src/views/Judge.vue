@@ -1,18 +1,13 @@
 <template>
-    <div>
-        <!--
-            Use v-if to force component re-render
-            and fire JudgeScoreSheet's onMounted() hook.
-        -->
-        <JudgeScoreSheet
-            v-if="portionStore.activePortion === 'maj'"
-            portion="maj"
-        />
-        <JudgeScoreSheet
-            v-else-if="portionStore.activePortion === 'dlc'"
-            portion="dlc"
-        />
-    </div>
+    <!-- v-if to force re-render -->
+    <JudgeScoreSheet
+        v-if="portionStore.activePortion === 'maj'"
+        portion="maj"
+    />
+    <JudgeScoreSheet
+        v-else-if="portionStore.activePortion === 'dlc'"
+        portion="dlc"
+    />
 </template>
 
 
