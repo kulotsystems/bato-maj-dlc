@@ -26,7 +26,7 @@
                     <v-icon icon="mdi-arrow-left" start/>
                     Back
                 </v-btn>
-                <v-btn color="primary" variant="text" :disabled="loading">
+                <v-btn color="primary" variant="text" :disabled="loading" @click="emit('submit')">
                     Submit
                 </v-btn>
             </v-card-actions>
@@ -61,7 +61,7 @@
     });
 
     // emits
-    const emit = defineEmits(['close']);
+    const emit = defineEmits(['close', 'submit']);
 </script>
 
 

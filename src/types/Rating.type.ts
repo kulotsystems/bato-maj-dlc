@@ -43,3 +43,14 @@ export type RatingPayloadType = {
     judgeID: UserIDType,
     values: Array<RatingPayloadValueType>
 };
+
+export type RatingFinalsRowPayloadType = {
+    contingentID: ContingentIDType,
+    values: Array<RatingPayloadValueType>
+}
+
+export type RatingFinalsPayloadType = {
+    portion: PortionKeyType,
+    judgeID: UserIDType,
+    rows: Array<RatingFinalsRowPayloadType>
+};

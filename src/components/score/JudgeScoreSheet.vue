@@ -167,8 +167,16 @@
         </div>
 
         <!-- dialogs -->
-        <dialog-submit-ratings  :opened="submitOpen" :loading="submitLoading" @close="closeSubmitRatingsDialog"/>
-        <dialog-inspect-ratings :opened="inspectOpen" @close="inspectOpen = false"/>
+        <dialog-submit-ratings
+            :opened="submitOpen"
+            :loading="submitLoading"
+            @close="closeSubmitRatingsDialog"
+            @submit="submitRatings"
+        />
+        <dialog-inspect-ratings
+            :opened="inspectOpen"
+            @close="inspectOpen = false"
+        />
     </div>
 </template>
 
@@ -177,6 +185,7 @@
     import _ from 'lodash';
     import { ref, computed, onMounted, reactive } from 'vue';
     import { useStore } from '../../store/store';
+    import { useAuthStore } from '../../store/store-auth';
     import { usePortionStore } from '../../store/store-portion';
     import { PortionKeyType } from '../../types/Portion.type';
     import { ScoreSheetType } from '../../types/ScoreSheet.type';
@@ -186,7 +195,9 @@
         RatingPayloadType,
         RatingTotalsType,
         RatingTotalType,
-        RatingValueType
+        RatingValueType,
+        RatingFinalsRowPayloadType,
+        RatingFinalsPayloadType
     } from '../../types/Rating.type';
     import { CriteriaType } from '../../types/Criteria.type';
 
@@ -205,6 +216,7 @@
 
     // use hooks
     const store = useStore();
+    const authStore = useAuthStore();
     const portionStore = usePortionStore();
 
 
@@ -377,11 +389,62 @@
         // make request
         await store.requestAsync('POST', { ratings }, '', 'judge.php')
             .then(result => {
+                if(result.error) {
+                    alert(result.error);
+                    window.location.reload();
+                }
+
                 // stop loading
                 if(scoreTotal.loading) {
                     setTimeout(() => {
                         scoreTotal.loading = false;
                     }, 1000);
+                }
+            });
+    };
+
+
+    const submitRatings = async () => {
+        // start loading
+        submitLoading.value = true;
+
+        // prepare payload
+        const finalRatings: RatingFinalsPayloadType = {
+            portion: props.portion,
+            judgeID: scoreSheet.ratings[Object.keys(scoreSheet.ratings)[0]].judge_id,
+            rows: []
+        };
+        for(let i=0; i<scoreSheet.contingents.length; i++) {
+            const contingent = scoreSheet.contingents[i];
+            const row: RatingFinalsRowPayloadType = {
+                contingentID: contingent.id,
+                values: []
+            }
+            for(let j=0; j<scoreSheet.criteria.length; j++) {
+                const criteria = scoreSheet.criteria[j];
+                const rating   = scoreSheet.ratings[`${contingent.id}_${criteria.id}`];
+                row.values.push({
+                    criteriaID: criteria.id,
+                    value: rating.value
+                });
+            }
+            finalRatings.rows.push(row);
+        }
+
+
+        // submit final ratings
+        await store.requestAsync('POST', { finalRatings }, '', 'judge.php')
+            .then(result => {
+                if(result.error) {
+                    alert(result.error);
+                    window.location.reload();
+                }
+
+                // stop loading
+                if(submitLoading.value) {
+                    setTimeout(() => {
+                        submitLoading.value = false;
+                    }, 1100);
                 }
             });
     };
