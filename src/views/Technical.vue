@@ -16,7 +16,7 @@
 
 
     // components
-    import TechnicalScoreSheet from '../components/score/TechnicalScoreSheet.vue'
+    import TechnicalScoreSheet from '../components/score/TechnicalScoreSheet.vue';
 
 
     // use hooks
