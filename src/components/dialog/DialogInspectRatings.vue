@@ -6,11 +6,11 @@
     >
         <v-card color="error">
             <v-card-title class="text-h5 bg-error text-white">
-                Submit Ratings
+                Submit <span class="text-capitalize">{{ entity }}</span>
             </v-card-title>
             <v-card-text class="bg-white text-error">
                 <p class="mb-3">
-                    Sorry, your ratings cannot be submitted as they must be between
+                    Sorry, your {{ entity }} cannot be submitted as they must be between
                     <b>{{ store.rating.min }}</b> and <b>{{ store.rating.max }}</b>.
                 </p>
                 <p>Please adjust your ratings and try submitting again.</p>
@@ -44,6 +44,11 @@
         opened: {
             type: Boolean,
             required: true
+        },
+        entity: {
+            type: String,
+            required: false,
+            default: 'ratings'
         }
     });
 
