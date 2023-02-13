@@ -141,6 +141,7 @@
                     <th colspan="8">
                         <div class="d-flex justify-end py-5">
                             <v-btn
+                                @click="openSubmitRatingsDialog"
                                 color="primary"
                                 size="x-large"
                                 variant="tonal"
@@ -163,13 +164,16 @@
                 class="mb-16"
             />
         </div>
+
+        <!-- dialog -->
+        <dialog-submit-ratings :opened="submitOpen" :loading="submitLoading" @close="closeSubmitRatingsDialog"/>
     </div>
 </template>
 
 
 <script lang="ts" setup>
     import _ from 'lodash';
-    import { computed, onMounted, reactive } from 'vue';
+    import { ref, computed, onMounted, reactive } from 'vue';
     import { useStore } from '../../store/store';
     import { usePortionStore } from '../../store/store-portion';
     import { PortionKeyType } from '../../types/Portion.type';
@@ -183,6 +187,10 @@
         RatingValueType
     } from '../../types/Rating.type';
     import { CriteriaType } from '../../types/Criteria.type';
+
+
+    // components
+    import DialogSubmitRatings from '../../components/dialog/DialogSubmitRatings.vue';
 
 
     // props
@@ -209,6 +217,8 @@
         x: -1,
         y: -1
     });
+    const submitOpen = ref(false);
+    const submitLoading = ref(false);
 
 
     // computed
@@ -361,6 +371,17 @@
                 }
             });
     };
+
+
+    const openSubmitRatingsDialog = () => {
+        submitOpen.value = true;
+    }
+
+
+    const closeSubmitRatingsDialog = () => {
+        submitOpen.value = false;
+        submitLoading.value = false;
+    }
 
 
     const move = (x: number, y: number, focus: boolean = true) => {
