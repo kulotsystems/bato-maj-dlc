@@ -13,6 +13,7 @@ class Contingent extends App
     protected $table;
     protected $table_criteria;
     protected $table_rating;
+    protected $table_deduction;
 
 
     public function __construct($contingentType, $id = 0)
@@ -20,8 +21,9 @@ class Contingent extends App
         parent::__construct();
         $this->contingentType = $contingentType;
         $this->table = 'contingents_' . $contingentType;
-        $this->table_criteria = 'criteria_' . $contingentType;
-        $this->table_rating = 'ratings_' . $contingentType;
+        $this->table_criteria  = 'criteria_' . $contingentType;
+        $this->table_rating    = 'ratings_' . $contingentType;
+        $this->table_deduction = 'deductions_' . $contingentType;
 
         // get other info
         $this->id = $id;
@@ -122,4 +124,50 @@ class Contingent extends App
         $stmt->close();
     }
 
+
+    public function getDeduction($technical_id)
+    {
+        $deductionInfo = [
+            'id'            => 0,
+            'value'         => 0,
+            'is_locked'     => 0,
+            'technical_id'  => $technical_id,
+            'contingent_id' => $this->id
+        ];
+
+        // check if deduction exists for technical judge
+        $query = "SELECT id, value, is_locked FROM $this->table_deduction WHERE technical_id = ? AND contingent_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ii", $technical_id, $this->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if($result->num_rows > 0) {
+            // deduction found
+            $row = $result->fetch_assoc();
+            $deductionInfo['id'] = $row['id'];
+            $deductionInfo['value'] = $row['value'];
+            $deductionInfo['is_locked'] = $row['is_locked'];
+        }
+        else {
+            // deduction not found, insert it
+            $query = "INSERT INTO $this->table_deduction (technical_id, contingent_id, value) VALUES (?, ?, 0)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("ii", $technical_id, $this->id);
+            $stmt->execute();
+            $deductionInfo['id'] = $this->conn->insert_id;
+        }
+
+        return $deductionInfo;
+    }
+
+
+    public function setDeduction($technical_id, $value, $lock=false)
+    {
+        $query = "UPDATE $this->table_deduction SET value = ?, is_locked = ? WHERE technical_id = ? AND contingent_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $is_locked = $lock ? 1 : 0;
+        $stmt->bind_param("diii", $value, $is_locked, $technical_id, $this->id);
+        $stmt->execute();
+        $stmt->close();
+    }
 }

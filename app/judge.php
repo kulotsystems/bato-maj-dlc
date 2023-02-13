@@ -69,6 +69,10 @@ else {
                     'finalRatings_submitted' => true
                 ]);
             }
+
+
+            else
+                denyAccess();
         }
     }
 

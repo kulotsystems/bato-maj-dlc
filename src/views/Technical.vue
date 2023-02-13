@@ -1,21 +1,26 @@
 <template>
-    <div>
-
-    </div>
+    <!-- v-if to force re-render -->
+    <technical-score-sheet
+        v-if="portionStore.activePortion === 'maj'"
+        portion="maj"
+    />
+    <technical-score-sheet
+        v-else-if="portionStore.activePortion === 'dlc'"
+        portion="dlc"
+    />
 </template>
 
 
 <script lang="ts" setup>
-    import { useRouter } from 'vue-router';
-    import { useAuthStore } from '../store/store-auth';
+    import { usePortionStore } from '../store/store-portion';
 
-    const router = useRouter();
-    const authStore = useAuthStore();
 
-    const handleSignOut = async () => {
-        await authStore.signOut();
-        await router.replace({ name: 'sign-in' });
-    }
+    // components
+    import TechnicalScoreSheet from '../components/score/TechnicalScoreSheet.vue'
+
+
+    // use hooks
+    const portionStore = usePortionStore();
 </script>
 
 

@@ -47,7 +47,7 @@ export type RatingPayloadType = {
 export type RatingFinalsRowPayloadType = {
     contingentID: ContingentIDType,
     values: Array<RatingPayloadValueType>
-}
+};
 
 export type RatingFinalsPayloadType = {
     portion: PortionKeyType,
