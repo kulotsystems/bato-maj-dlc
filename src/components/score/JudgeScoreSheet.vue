@@ -168,24 +168,24 @@
 
 
 <script lang="ts" setup>
-import _ from 'lodash';
-import { computed, onMounted, reactive } from 'vue';
-import { useStore } from '../../store/store';
-import { usePortionStore } from '../../store/store-portion';
-import { PortionKeyType } from '../../types/Portion.type';
-import { ScoreSheetType } from '../../types/ScoreSheet.type';
-import { ContingentIDType } from '../../types/Contingent.type';
-import {
-    RatingIsLockedType,
-    RatingPayloadType,
-    RatingTotalsType,
-    RatingTotalType,
-    RatingValueType
-} from '../../types/Rating.type';
-import { CriteriaType } from '../../types/Criteria.type';
+    import _ from 'lodash';
+    import { computed, onMounted, reactive } from 'vue';
+    import { useStore } from '../../store/store';
+    import { usePortionStore } from '../../store/store-portion';
+    import { PortionKeyType } from '../../types/Portion.type';
+    import { ScoreSheetType } from '../../types/ScoreSheet.type';
+    import { ContingentIDType } from '../../types/Contingent.type';
+    import {
+        RatingIsLockedType,
+        RatingPayloadType,
+        RatingTotalsType,
+        RatingTotalType,
+        RatingValueType
+    } from '../../types/Rating.type';
+    import { CriteriaType } from '../../types/Criteria.type';
 
 
-// props
+    // props
     interface ScoreSheetProps {
         portion: PortionKeyType
     }
@@ -214,37 +214,27 @@ import { CriteriaType } from '../../types/Criteria.type';
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
     const ranks = computed(() => {
-        // get the values of the 'value' property from each object in 'scoreTotals' object
+        // get the value of the 'value' property from each object in the 'scoreTotals' object
         const scores = _.map(scoreTotals, (obj: RatingTotalType) => obj.value);
 
         // sort the 'scores' array in descending order
-        const sortedScores = _.sortBy(scores, (score: number) => score).reverse();
+        const sortedScores = _.sortBy(scores, (score: RatingValueType) => score).reverse();
 
         // create a map of scores to their ranks
-        const scoreRankMap = _.reduce(
-            sortedScores,
-            (result: { [key: number]: number[] }, score: number, index: number) => {
-                // if the score is not already present in the 'result' object, create an empty array
-                result[score] = result[score] || [];
-                // push the rank (index + 1) to the array of scores
-                result[score].push(index + 1);
-                return result;
-            },
-            {}
-        );
+        const scoreRankMap = _.reduce(sortedScores, (result: { [key: number]: number[] }, score: RatingValueType, index: number) => {
+            // if the score is not already in the 'result' object, create an empty array
+            result[score] = result[score] || [];
+            // add the rank (index + 1) to the array of scores
+            result[score].push(index + 1);
+            return result;
+        }, {});
 
         // compute the average rank of each score
-        return _.reduce(
-            scoreTotals,
-            (result: { [key: string]: number }, obj: RatingTotalType, key: string) => {
-                const score = obj.value;
-                const ranks = scoreRankMap[score];
-                // add the average rank for the current score to the 'result' object
-                result[key] = _.sum(ranks) / ranks.length;
-                return result;
-            },
-            {}
-        );
+        return _.mapValues(scoreTotals, (obj: RatingTotalType, key: string) => {
+            const score = obj.value;
+            const ranks = scoreRankMap[score];
+            return _.sum(ranks) / ranks.length;
+        });
     });
 
 
