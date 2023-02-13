@@ -112,11 +112,12 @@ class Contingent extends App
     }
 
 
-    public function setRating($judge_id, $criteria_id, $value)
+    public function setRating($judge_id, $criteria_id, $value, $lock=false)
     {
-        $query = "UPDATE $this->table_rating SET value = ? WHERE judge_id = ? AND criteria_id = ? AND contingent_id = ?";
+        $query = "UPDATE $this->table_rating SET value = ?, is_locked = ? WHERE judge_id = ? AND criteria_id = ? AND contingent_id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("diii", $value, $judge_id, $criteria_id, $this->id);
+        $is_locked = $lock ? 1 : 0;
+        $stmt->bind_param("diiii", $value, $is_locked, $judge_id, $criteria_id, $this->id);
         $stmt->execute();
         $stmt->close();
     }

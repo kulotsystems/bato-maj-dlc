@@ -42,7 +42,7 @@ class Judge extends User
     }
 
 
-    public function storeRatings($ratings)
+    public function storeRatings($ratings, $lock=false)
     {
         require_once 'Majorette.php';
         require_once 'DrumLyreCorps.php';
@@ -52,7 +52,7 @@ class Judge extends User
             : new DrumLyreCorps($ratings['contingentID']);
 
         foreach($ratings['values'] as $rating) {
-            $contingent->setRating($this->id, $rating['criteriaID'], $rating['value']);
+            $contingent->setRating($this->id, $rating['criteriaID'], $rating['value'], $lock);
         }
     }
 }

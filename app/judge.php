@@ -45,6 +45,10 @@ else {
 
                 else
                     $judge->storeRatings($ratings);
+
+                echo json_encode([
+                    'ratings_sent' => true
+                ]);
             }
 
             // submit final ratings
@@ -57,9 +61,13 @@ else {
                 else {
                     foreach($finalRatings['rows'] as $ratings) {
                         $ratings['portion'] = $finalRatings['portion'];
-                        $judge->storeRatings($ratings);
+                        $judge->storeRatings($ratings, true);
                     }
                 }
+
+                echo json_encode([
+                    'finalRatings_submitted' => true
+                ]);
             }
         }
     }

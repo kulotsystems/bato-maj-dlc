@@ -23,7 +23,7 @@
                         :key="criteria.id"
                         class="py-2 text-center"
                         style="width: 13%"
-                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
+                        :class="{  'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
                     >
                         <div class="d-flex h-100 flex-column align-content-space-between">
                             <div class="text-subtitle-2 text-primary">{{ criteria.title }}</div>
@@ -32,7 +32,7 @@
                     </th>
                     <th
                         class="py-2" style="width: 13%"
-                        :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }"
                     >
                         <div class="h-100 d-flex justify-center align-center">
                             <div class="text-h6 text-primary">TOTAL</div>
@@ -51,14 +51,14 @@
                 <tr
                     v-for="(contingent, contingentIndex) in scoreSheet.contingents"
                     :key="contingent.id"
-                    :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex }"
+                    :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex && !scoreSheetDisabled }"
                 >
                     <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
                     <td class="text-subtitle-2">{{ contingent.school }}</td>
                     <td
                         v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
                         :key="criteria.id"
-                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
+                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
                     >
                        <v-text-field
                            type="number"
@@ -97,7 +97,7 @@
                            @focus.passive="updateCoordinates(criteriaIndex, contingentIndex)"
                        />
                     </td>
-                    <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }">
+                    <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }">
                         <v-text-field
                             type="number"
                             class="ma-0 font-weight-bold"
@@ -146,7 +146,7 @@
                                 size="x-large"
                                 variant="tonal"
                                 block
-                                :disabled="scoreTotalsLoading"
+                                :disabled="scoreTotalsLoading || scoreSheetDisabled"
                             >
                                 Submit Ratings
                             </v-btn>
@@ -239,6 +239,7 @@
 
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
+
     const scoreTotalsLoading = computed(() => {
         let loading = false;
         for(const key in scoreTotals) {
@@ -249,6 +250,24 @@
         }
         return loading;
     });
+
+    const scoreSheetDisabled = computed(() => {
+        let disabled = true;
+        for(const key in scoreTotals) {
+            if(!scoreTotals[key].is_locked) {
+                disabled = false;
+                break;
+            }
+        }
+        for(const key in scoreSheet.ratings) {
+            if(!scoreSheet.ratings[key].is_locked) {
+                disabled = false;
+                break;
+            }
+        }
+        return disabled;
+    });
+
     const ranks = computed(() => {
         // get the value of the 'value' property from each object in the 'scoreTotals' object
         const scores = _.map(scoreTotals, (obj: RatingTotalType) => obj.value);
@@ -444,6 +463,17 @@
                 if(submitLoading.value) {
                     setTimeout(() => {
                         submitLoading.value = false;
+                        submitOpen.value = false;
+
+                        // lock all ratings in scoreSheet
+                        for(const key in scoreSheet.ratings) {
+                            scoreSheet.ratings[key].is_locked = 1;
+                        }
+
+                        // lock all scoreTotals
+                        for(const key in scoreTotals) {
+                            scoreTotals[key].is_locked = 1;
+                        }
                     }, 1100);
                 }
             });
