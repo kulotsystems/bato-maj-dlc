@@ -347,15 +347,13 @@
         let enteredTotal = Number(scoreTotals[`t_${contingentID}`].value);
 
         // validate entered total
-        if(enteredTotal > 0) {
-            if(enteredTotal < store.rating.min) {
-                scoreTotals[`t_${contingentID}`].value = store.rating.min;
-                enteredTotal = store.rating.min;
-            }
-            else if(enteredTotal > store.rating.max) {
-                scoreTotals[`t_${contingentID}`].value = store.rating.max;
-                enteredTotal = store.rating.max;
-            }
+        if(enteredTotal < store.rating.min) {
+            scoreTotals[`t_${contingentID}`].value = store.rating.min;
+            enteredTotal = store.rating.min;
+        }
+        else if(enteredTotal > store.rating.max) {
+            scoreTotals[`t_${contingentID}`].value = store.rating.max;
+            enteredTotal = store.rating.max;
         }
 
         // compute individual ratings based on total
