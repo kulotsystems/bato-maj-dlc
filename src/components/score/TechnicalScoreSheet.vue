@@ -49,11 +49,6 @@
                         :min="store.deduction.min"
                         :max="store.deduction.max"
                         v-model.number="deductionSheet.deductions[`d_${contingent.id}`].value"
-                        :variant="
-                              deductionSheet.deductions[`d_${contingent.id}`].value > store.deduction.max
-                           || deductionSheet.deductions[`d_${contingent.id}`].value < store.deduction.min
-                           ? 'outlined' : 'underlined'
-                       "
                         :error="(
                               deductionSheet.deductions[`d_${contingent.id}`].value.toString().trim() === ''
                            || deductionSheet.deductions[`d_${contingent.id}`].value < store.deduction.min
