@@ -22,7 +22,7 @@
                         v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
                         :key="criteria.id"
                         class="py-2 text-center"
-                        style="width: 15%"
+                        style="width: 13%"
                         :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex }"
                     >
                         <div class="d-flex h-100 flex-column align-content-space-between">
@@ -31,7 +31,7 @@
                         </div>
                     </th>
                     <th
-                        class="py-2" style="width: 15%"
+                        class="py-2" style="width: 13%"
                         :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length }"
                     >
                         <div class="h-100 d-flex justify-center align-center">
