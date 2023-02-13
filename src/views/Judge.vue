@@ -1,10 +1,10 @@
 <template>
     <!-- v-if to force re-render -->
-    <JudgeScoreSheet
+    <judge-score-sheet
         v-if="portionStore.activePortion === 'maj'"
         portion="maj"
     />
-    <JudgeScoreSheet
+    <judge-score-sheet
         v-else-if="portionStore.activePortion === 'dlc'"
         portion="dlc"
     />
