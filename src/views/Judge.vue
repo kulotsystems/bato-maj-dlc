@@ -12,8 +12,6 @@
 
 
 <script lang="ts" setup>
-    import { useRouter } from 'vue-router';
-    import { useAuthStore } from '../store/store-auth';
     import { usePortionStore } from '../store/store-portion';
 
 
@@ -22,16 +20,7 @@
 
 
     // use hooks
-    const router = useRouter();
-    const authStore = useAuthStore();
     const portionStore = usePortionStore();
-
-
-    // methods
-    const handleSignOut = async () => {
-        await authStore.signOut();
-        await router.replace({ name: 'sign-in' });
-    }
 </script>
 
 
