@@ -146,6 +146,7 @@
                                 size="x-large"
                                 variant="tonal"
                                 block
+                                :disabled="scoreTotalsLoading"
                             >
                                 Submit Ratings
                             </v-btn>
@@ -165,8 +166,9 @@
             />
         </div>
 
-        <!-- dialog -->
-        <dialog-submit-ratings :opened="submitOpen" :loading="submitLoading" @close="closeSubmitRatingsDialog"/>
+        <!-- dialogs -->
+        <dialog-submit-ratings  :opened="submitOpen" :loading="submitLoading" @close="closeSubmitRatingsDialog"/>
+        <dialog-inspect-ratings :opened="inspectOpen" @close="inspectOpen = false"/>
     </div>
 </template>
 
@@ -191,6 +193,7 @@
 
     // components
     import DialogSubmitRatings from '../../components/dialog/DialogSubmitRatings.vue';
+    import DialogInspectRatings from '../../components/dialog/DialogInspectRatings.vue';
 
 
     // props
@@ -217,12 +220,23 @@
         x: -1,
         y: -1
     });
-    const submitOpen = ref(false);
+    const submitOpen    = ref(false);
     const submitLoading = ref(false);
+    const inspectOpen   = ref(false);
 
 
     // computed
     const scoreSheetHeight = computed(() => store.window.height - 64);
+    const scoreTotalsLoading = computed(() => {
+        let loading = false;
+        for(const key in scoreTotals) {
+            if(scoreTotals[key].loading) {
+                loading = true;
+                break;
+            }
+        }
+        return loading;
+    });
     const ranks = computed(() => {
         // get the value of the 'value' property from each object in the 'scoreTotals' object
         const scores = _.map(scoreTotals, (obj: RatingTotalType) => obj.value);
@@ -374,7 +388,20 @@
 
 
     const openSubmitRatingsDialog = () => {
-        submitOpen.value = true;
+        // check scoreTotals
+        if(!scoreTotalsLoading.value) {
+            let invalidTotalKey = null;
+            for (let key in scoreTotals) {
+                if (scoreTotals[key].is_locked === 0 && (scoreTotals[key].value < store.rating.min || scoreTotals[key].value > store.rating.max)) {
+                    invalidTotalKey = key
+                    break;
+                }
+            }
+            if(invalidTotalKey)
+                inspectOpen.value = true;
+            else
+                submitOpen.value = true;
+        }
     }
 
 
