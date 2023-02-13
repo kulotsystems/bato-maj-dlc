@@ -1,23 +1,26 @@
 <template>
-    <div>
-
-    </div>
+    <!-- v-if to force re-render -->
+    <admin-score-view
+        v-if="portionStore.activePortion === 'maj'"
+        portion="maj"
+    />
+    <admin-score-view
+        v-else-if="portionStore.activePortion === 'dlc'"
+        portion="dlc"
+    />
 </template>
 
 
 <script lang="ts" setup>
-    import { useRouter } from 'vue-router';
-    import { useAuthStore } from '../store/store-auth';
+    import { usePortionStore } from '../store/store-portion';
+
+
+    // components
+    import AdminScoreView from '../components/score/AdminScoreView.vue';
+
 
     // use hooks
-    const router = useRouter();
-    const authStore = useAuthStore();
-
-    // methods
-    const handleSignOut = async () => {
-        await authStore.signOut();
-        await router.replace({ name: 'sign-in' });
-    }
+    const portionStore = usePortionStore();
 </script>
 
 
