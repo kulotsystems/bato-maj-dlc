@@ -1,183 +1,181 @@
 <template>
-    <div>
-        <!-- ratings table -->
-        <v-table
-            v-if="scoreSheet.ready"
-            density="comfortable"
-            fixed-header
-            hover
-            :height="scoreSheetHeight"
-        >
-            <!-- table header -->
-            <thead>
-                <tr>
-                    <th colspan="2" class="py-2">
-                        <div class="h-100 d-flex justify-center align-center">
-                            <div class="text-h6 text-primary text-uppercase font-weight-bold">
-                                {{ portionStore.portions[portion].title }}
-                            </div>
+    <!-- ratings table -->
+    <v-table
+        v-if="scoreSheet.ready"
+        density="comfortable"
+        fixed-header
+        hover
+        :height="scoreSheetHeight"
+    >
+        <!-- table header -->
+        <thead>
+            <tr>
+                <th colspan="2" class="py-2">
+                    <div class="h-100 d-flex justify-center align-center">
+                        <div class="text-h6 text-primary text-uppercase font-weight-bold">
+                            {{ portionStore.portions[portion].title }}
                         </div>
-                    </th>
-                    <th
-                        v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
-                        :key="criteria.id"
-                        class="py-2 text-center"
-                        style="width: 13%"
-                        :class="{  'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
-                    >
-                        <div class="d-flex h-100 flex-column align-content-space-between">
-                            <div class="text-subtitle-2 text-primary">{{ criteria.title }}</div>
-                            <div class="text-body-1 text-primary font-weight-bold" style="margin-top: auto">{{ criteria.percentage }}</div>
-                        </div>
-                    </th>
-                    <th
-                        class="py-2" style="width: 13%"
-                        :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }"
-                    >
-                        <div class="h-100 d-flex justify-center align-center">
-                            <div class="text-h6 text-primary">TOTAL</div>
-                        </div>
-                    </th>
-                    <th>
-                        <div class="h-100 d-flex justify-center align-center">
-                            <div class="text-h6 text-primary">RANK</div>
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-
-            <!-- table body -->
-            <tbody>
-                <tr
-                    v-for="(contingent, contingentIndex) in scoreSheet.contingents"
-                    :key="contingent.id"
-                    :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex && !scoreSheetDisabled }"
+                    </div>
+                </th>
+                <th
+                    v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
+                    :key="criteria.id"
+                    class="py-2 text-center"
+                    style="width: 13%"
+                    :class="{  'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
                 >
-                    <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
-                    <td class="text-subtitle-2">{{ contingent.school }}</td>
-                    <td
-                        v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
-                        :key="criteria.id"
-                        :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
-                    >
-                       <v-text-field
-                           type="number"
-                           class="ma-0"
-                           hide-details
-                           single-line
-                           :min="0"
-                           :max="criteria.percentage"
-                           v-model.number="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value"
-                           :variant="
-                                  scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
-                               || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
-                               ? 'outlined' : 'underlined'
-                           "
-                           :error="(
-                                  scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value.toString().trim() === ''
-                               || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
-                               || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
-                           )"
-                           :class="{
-                                'text-error font-weight-bold': (
-                                       scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
-                                    || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
-                                ),
-                                'text-grey': scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == 0
-                            }"
-                           :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
-                           :id="`input_${contingentIndex}_${criteriaIndex}`"
-                           @change="handleRatingChange(contingent.id, criteria)"
-                           @keyup.prevent="handleRatingKeyUp(contingent.id)"
-                           @keydown.down.prevent="moveDown(criteriaIndex, contingentIndex)"
-                           @keydown.enter="moveDown(criteriaIndex, contingentIndex)"
-                           @keydown.up.prevent="moveUp(criteriaIndex, contingentIndex)"
-                           @keydown.right.prevent="moveRight(criteriaIndex, contingentIndex)"
-                           @keydown.left.prevent="moveLeft(criteriaIndex, contingentIndex)"
-                           @focus.passive="updateCoordinates(criteriaIndex, contingentIndex)"
-                       />
-                    </td>
-                    <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }">
-                        <v-text-field
-                            type="number"
-                            class="ma-0 font-weight-bold"
-                            hide-details
-                            single-line
-                            variant="outlined"
-                            :min="store.rating.min"
-                            :max="store.rating.max"
-                            v-model.number="scoreTotals[`t_${contingent.id}`].value"
-                            :class="{
-                                'text-error': (
-                                       scoreTotals[`t_${contingent.id}`].value < store.rating.min
-                                    || scoreTotals[`t_${contingent.id}`].value > store.rating.max
-                                ),
-                                'text-success': (
-                                       scoreTotals[`t_${contingent.id}`].value >= store.rating.min
-                                    && scoreTotals[`t_${contingent.id}`].value <= store.rating.max
-                                )
-                            }"
-                            :disabled="scoreTotals[`t_${contingent.id}`].is_locked == 1"
-                            :loading="scoreTotals[`t_${contingent.id}`].loading"
-                            :id="`input_${contingentIndex}_${scoreSheet.criteria.length}`"
-                            @change="handleTotalChange(contingent.id)"
-                            @keydown.down.prevent="moveDown(scoreSheet.criteria.length, contingentIndex)"
-                            @keydown.enter="moveDown(scoreSheet.criteria.length, contingentIndex)"
-                            @keydown.up.prevent="moveUp(scoreSheet.criteria.length, contingentIndex)"
-                            @keydown.right.prevent="moveRight(scoreSheet.criteria.length, contingentIndex)"
-                            @keydown.left.prevent="moveLeft(scoreSheet.criteria.length, contingentIndex)"
-                            @focus.passive="updateCoordinates(scoreSheet.criteria.length, contingentIndex)"
-                        />
-                    </td>
-                    <td class="text-center text-primary">
-                        {{ ranks[`t_${contingent.id}`] }}
-                    </td>
-                </tr>
-            </tbody>
+                    <div class="d-flex h-100 flex-column align-content-space-between">
+                        <div class="text-subtitle-2 text-primary">{{ criteria.title }}</div>
+                        <div class="text-body-1 text-primary font-weight-bold" style="margin-top: auto">{{ criteria.percentage }}</div>
+                    </div>
+                </th>
+                <th
+                    class="py-2" style="width: 13%"
+                    :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }"
+                >
+                    <div class="h-100 d-flex justify-center align-center">
+                        <div class="text-h6 text-primary">TOTAL</div>
+                    </div>
+                </th>
+                <th>
+                    <div class="h-100 d-flex justify-center align-center">
+                        <div class="text-h6 text-primary">RANK</div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
 
-            <!-- table footer -->
-            <tfoot>
-                <tr>
-                    <th colspan="8">
-                        <div class="d-flex justify-end py-5">
-                            <v-btn
-                                @click="openSubmitRatingsDialog"
-                                color="primary"
-                                size="x-large"
-                                variant="tonal"
-                                block
-                                :disabled="scoreTotalsLoading || scoreSheetDisabled"
-                            >
-                                Submit Ratings
-                            </v-btn>
-                        </div>
-                    </th>
-                </tr>
-            </tfoot>
-        </v-table>
+        <!-- table body -->
+        <tbody>
+            <tr
+                v-for="(contingent, contingentIndex) in scoreSheet.contingents"
+                :key="contingent.id"
+                :class="{ 'bg-grey-lighten-4': coordinates.y == contingentIndex && !scoreSheetDisabled }"
+            >
+                <td class="text-h5 text-center text-primary font-weight-bold">{{ contingent.number}}</td>
+                <td class="text-subtitle-2">{{ contingent.school }}</td>
+                <td
+                    v-for="(criteria, criteriaIndex) in scoreSheet.criteria"
+                    :key="criteria.id"
+                    :class="{ 'bg-grey-lighten-4': coordinates.x == criteriaIndex && !scoreSheetDisabled }"
+                >
+                   <v-text-field
+                       type="number"
+                       class="ma-0"
+                       hide-details
+                       single-line
+                       :min="0"
+                       :max="criteria.percentage"
+                       v-model.number="scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value"
+                       :variant="
+                              scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
+                           || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
+                           ? 'outlined' : 'underlined'
+                       "
+                       :error="(
+                              scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value.toString().trim() === ''
+                           || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
+                           || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
+                       )"
+                       :class="{
+                            'text-error font-weight-bold': (
+                                   scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value < 0
+                                || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value > criteria.percentage
+                            ),
+                            'text-grey': scoreSheet.ratings[`${contingent.id}_${criteria.id}`].value == 0
+                        }"
+                       :disabled="contingent.is_active == 0 || scoreSheet.ratings[`${contingent.id}_${criteria.id}`].is_locked == 1"
+                       :id="`input_${contingentIndex}_${criteriaIndex}`"
+                       @change="handleRatingChange(contingent.id, criteria)"
+                       @keyup.prevent="handleRatingKeyUp(contingent.id)"
+                       @keydown.down.prevent="moveDown(criteriaIndex, contingentIndex)"
+                       @keydown.enter="moveDown(criteriaIndex, contingentIndex)"
+                       @keydown.up.prevent="moveUp(criteriaIndex, contingentIndex)"
+                       @keydown.right.prevent="moveRight(criteriaIndex, contingentIndex)"
+                       @keydown.left.prevent="moveLeft(criteriaIndex, contingentIndex)"
+                       @focus.passive="updateCoordinates(criteriaIndex, contingentIndex)"
+                   />
+                </td>
+                <td :class="{ 'bg-grey-lighten-4': coordinates.x == scoreSheet.criteria.length && !scoreSheetDisabled }">
+                    <v-text-field
+                        type="number"
+                        class="ma-0 font-weight-bold"
+                        hide-details
+                        single-line
+                        variant="outlined"
+                        :min="store.rating.min"
+                        :max="store.rating.max"
+                        v-model.number="scoreTotals[`t_${contingent.id}`].value"
+                        :class="{
+                            'text-error': (
+                                   scoreTotals[`t_${contingent.id}`].value < store.rating.min
+                                || scoreTotals[`t_${contingent.id}`].value > store.rating.max
+                            ),
+                            'text-success': (
+                                   scoreTotals[`t_${contingent.id}`].value >= store.rating.min
+                                && scoreTotals[`t_${contingent.id}`].value <= store.rating.max
+                            )
+                        }"
+                        :disabled="scoreTotals[`t_${contingent.id}`].is_locked == 1"
+                        :loading="scoreTotals[`t_${contingent.id}`].loading"
+                        :id="`input_${contingentIndex}_${scoreSheet.criteria.length}`"
+                        @change="handleTotalChange(contingent.id)"
+                        @keydown.down.prevent="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                        @keydown.enter="moveDown(scoreSheet.criteria.length, contingentIndex)"
+                        @keydown.up.prevent="moveUp(scoreSheet.criteria.length, contingentIndex)"
+                        @keydown.right.prevent="moveRight(scoreSheet.criteria.length, contingentIndex)"
+                        @keydown.left.prevent="moveLeft(scoreSheet.criteria.length, contingentIndex)"
+                        @focus.passive="updateCoordinates(scoreSheet.criteria.length, contingentIndex)"
+                    />
+                </td>
+                <td class="text-center text-primary">
+                    {{ ranks[`t_${contingent.id}`] }}
+                </td>
+            </tr>
+        </tbody>
 
-        <!-- loader -->
-        <div v-else class="d-flex justify-center align-center" :style="{ height: `${scoreSheetHeight}px` }">
-            <v-progress-circular
-                :size="80"
-                color="primary"
-                indeterminate
-                class="mb-16"
-            />
-        </div>
+        <!-- table footer -->
+        <tfoot>
+            <tr>
+                <th colspan="8">
+                    <div class="d-flex justify-end py-5">
+                        <v-btn
+                            @click="openSubmitRatingsDialog"
+                            color="primary"
+                            size="x-large"
+                            variant="tonal"
+                            block
+                            :disabled="scoreTotalsLoading || scoreSheetDisabled"
+                        >
+                            Submit Ratings
+                        </v-btn>
+                    </div>
+                </th>
+            </tr>
+        </tfoot>
+    </v-table>
 
-        <!-- dialogs -->
-        <dialog-submit-ratings
-            :opened="submitOpen"
-            :loading="submitLoading"
-            @close="closeSubmitRatingsDialog"
-            @submit="submitRatings"
-        />
-        <dialog-inspect-ratings
-            :opened="inspectOpen"
-            @close="inspectOpen = false"
+    <!-- loader -->
+    <div v-else class="d-flex justify-center align-center" :style="{ height: `${scoreSheetHeight}px` }">
+        <v-progress-circular
+            :size="80"
+            color="primary"
+            indeterminate
+            class="mb-16"
         />
     </div>
+
+    <!-- dialogs -->
+    <dialog-submit-ratings
+        :opened="submitOpen"
+        :loading="submitLoading"
+        @close="closeSubmitRatingsDialog"
+        @submit="submitRatings"
+    />
+    <dialog-inspect-ratings
+        :opened="inspectOpen"
+        @close="inspectOpen = false"
+    />
 </template>
 
 
@@ -349,15 +347,13 @@
         let enteredTotal = Number(scoreTotals[`t_${contingentID}`].value);
 
         // validate entered total
-        if(enteredTotal > 0) {
-            if(enteredTotal < store.rating.min) {
-                scoreTotals[`t_${contingentID}`].value = store.rating.min;
-                enteredTotal = store.rating.min;
-            }
-            else if(enteredTotal > store.rating.max) {
-                scoreTotals[`t_${contingentID}`].value = store.rating.max;
-                enteredTotal = store.rating.max;
-            }
+        if(enteredTotal < store.rating.min) {
+            scoreTotals[`t_${contingentID}`].value = store.rating.min;
+            enteredTotal = store.rating.min;
+        }
+        else if(enteredTotal > store.rating.max) {
+            scoreTotals[`t_${contingentID}`].value = store.rating.max;
+            enteredTotal = store.rating.max;
         }
 
         // compute individual ratings based on total

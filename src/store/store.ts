@@ -15,6 +15,10 @@ export const useStore = defineStore('store', {
         rating: {
             max: 100,
             min: 75
+        },
+        deduction: {
+            max: 100,
+            min: 0
         }
     }),
 
