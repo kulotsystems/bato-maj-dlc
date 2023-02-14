@@ -12,7 +12,7 @@ else if($authUser['userType'] !== 'admin')
 
 else {
     // get requests
-    if(isset($_GET['getScoreSheets'])) {
+    if(isset($_GET['getResults'])) {
         require_once 'models/Admin.php';
         $admin = new Admin($authUser['username'], $_SESSION['pass']);
 
@@ -20,14 +20,14 @@ else {
             denyAccess();
 
         else {
-            $portion = strtolower(trim($_GET['getScoreSheets']));
-            // $scoreSheets = $admin->getScoreSheets($portion);
+            $portion = strtolower(trim($_GET['getResults']));
 
-            // echo json_encode($scoreSheet);
+            $results = $admin->getResults($portion);
+
+            echo json_encode($results);
         }
     }
 
     else
         denyAccess();
 }
-

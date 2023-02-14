@@ -4,7 +4,7 @@ require_once 'User.php';
 
 class Technical extends User
 {
-    public function __construct($username, $password)
+    public function __construct($username = '', $password = '')
     {
         parent::__construct($username, $password, 'technical');
     }
@@ -35,6 +35,16 @@ class Technical extends User
             'contingents' => $contingentsInfos,
             'deductions'  => $deductions
         ];
+    }
+
+
+    public static function all()
+    {
+        $technical = new Technical();
+        $sql = "SELECT id, number, fullname, avatar FROM $technical->table ORDER BY number";
+        $result = $technical->conn->query($sql);
+
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
 

@@ -1,10 +1,10 @@
 <template>
     <!-- v-if to force re-render -->
-    <admin-score-view
+    <admin-results
         v-if="portionStore.activePortion === 'maj'"
         portion="maj"
     />
-    <admin-score-view
+    <admin-results
         v-else-if="portionStore.activePortion === 'dlc'"
         portion="dlc"
     />
@@ -16,7 +16,7 @@
 
 
     // components
-    import AdminScoreView from '../components/score/AdminScoreView.vue';
+    import AdminResults from '../components/score/AdminResults.vue';
 
 
     // use hooks

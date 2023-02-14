@@ -82,7 +82,7 @@ class Contingent extends App
         $ratingInfo = [
             'id'            => 0,
             'value'         => 0,
-            'is_locked'     => 0,
+            'm'     => 0,
             'judge_id'      => $judge_id,
             'criteria_id'   => $criteria_id,
             'contingent_id' => $this->id
