@@ -481,11 +481,13 @@
         if(!scoreTotalsLoading.value) {
             let invalidTotalKey = null;
             for (let key in scoreTotals) {
-                if (scoreTotals[key].is_locked === 0 && (scoreTotals[key].value < store.rating.min || scoreTotals[key].value > store.rating.max)) {
-                    invalidTotalKey = key
+                if (scoreTotals[key].is_locked == 0 && (scoreTotals[key].value < store.rating.min || scoreTotals[key].value > store.rating.max)) {
+                    invalidTotalKey = key;
                     break;
                 }
             }
+            console.log(invalidTotalKey);
+
             if(invalidTotalKey)
                 inspectOpen.value = true;
             else
