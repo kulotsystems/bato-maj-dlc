@@ -22,13 +22,23 @@ export type ResultContingentType = {
     school: ContingentSchoolType,
     logo: ContingentLogoType,
     is_active: ContingentIsActiveType,
+    deduction: {
+        total: RatingValueType,
+        average: RatingValueType
+    },
     rating: {
         total: RatingValueType,
         average:RatingValueType
     },
-    deduction: {
-        total: RatingValueType,
-        average: RatingValueType
+    rank: {
+        dense: {
+            total: RatingValueType,
+            average: RatingValueType
+        },
+        fraction: {
+            total: RatingValueType,
+            average: RatingValueType
+        }
     },
     final: {
         rating_average: {
@@ -43,7 +53,11 @@ export type ResultContingentArrayType = Array<ResultContingentType>;
 export type ResultJudgeRatingsType = {
     [key: string]: {
         value: RatingValueType,
-        locked: 0 | 1
+        locked: 0 | 1,
+        rank: {
+            dense: RatingValueType,
+            fraction: RatingValueType
+        }
     }
 };
 

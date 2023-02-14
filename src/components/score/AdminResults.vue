@@ -19,26 +19,14 @@
                         </div>
                     </div>
                 </th>
-                <!-- th judges -->
-                <th v-for="(judge, judgeIndex) in resultSheet.judges" :key="judge.id">
-                    <div class="h-100 d-flex justify-center align-center text-subtitle-1 text-green-darken-4">
-                        Judge {{ judge.number }}
-                    </div>
-                </th>
-                <!-- th average -->
-                <th>
-                    <div class="h-100 d-flex justify-center align-center">
-                        <div class="text-subtitle-1 text-green-darken-4 font-weight-bold">
-                            AVERAGE
-                        </div>
-                    </div>
-                </th>
                 <!-- th technicals -->
+                <!--
                 <th v-for="(technical, technicalIndex) in resultSheet.technicals" :key="technical.id">
                     <div class="h-100 d-flex justify-center align-center text-subtitle-1 text-red-darken-2">
                         Tech {{ technical.number }}
                     </div>
                 </th>
+                -->
                 <!-- th deductions -->
                 <th>
                     <div class="h-100 d-flex justify-center align-center">
@@ -47,19 +35,52 @@
                         </div>
                     </div>
                 </th>
-                <!-- th final -->
+                <!-- th judges -->
+                <template v-for="(judge, judgeIndex) in resultSheet.judges" :key="judge.id">
+                    <th>
+                        <div class="h-100 d-flex justify-center flex-column align-center text-subtitle-1 text-green-darken-4">
+                            J{{ judge.number }}
+                            <div v-if="judge.is_chairman == 1">CHAIRMAN</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="h-100 d-flex justify-center align-center text-subtitle-1 text-blue-darken-4 font-weight-bold">
+                            R{{ judge.number }}
+                        </div>
+                    </th>
+                </template>
+                <!-- th average -->
+                <!--
                 <th>
                     <div class="h-100 d-flex justify-center align-center">
-                        <div class="text-subtitle-1 text-black font-weight-bold">
-                            FINAL
+                        <div class="text-subtitle-1 text-green-darken-4 font-weight-bold">
+                            AVERAGE
                         </div>
                     </div>
                 </th>
+                -->
+                <!-- th final -->
+                <th>
+                    <div class="h-100 d-flex justify-center align-center">
+                        <div class="text-subtitle-1 text-green-darken-4 font-weight-bold">
+                            Average
+                        </div>
+                    </div>
+                </th>
+                <!-- th rank total -->
+                <th>
+                    <div class="h-100 d-flex justify-center align-center">
+                        <div class="text-subtitle-1 text-black font-weight-bold">
+                            Total Rank
+                        </div>
+                    </div>
+                </th>
+
                 <!-- th rank -->
                 <th>
                     <div class="h-100 d-flex justify-center align-center">
-                        <div class="text-subtitle-1 text-primary font-weight-bold">
-                            RANK
+                        <div class="text-h6 text-primary font-weight-bold">
+                            FINAL RANK
                         </div>
                     </div>
                 </th>
@@ -77,43 +98,58 @@
                 <!-- school -->
                 <td class="text-subtitle-2">{{ contingent.school }}</td>
 
-                <!-- judge ratings -->
-                <td
-                    v-for="(judge, judgeIndex) in resultSheet.judges"
-                    :key="judge.id"
-                    class="text-center text-subtitle-1 text-green-darken-2"
-                    :class="{ 'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0 }"
-                >
-                    {{ judge.ratings[`c_${contingent.id}`].value.toFixed(2) }}
-                </td>
-
-                <!-- judge average -->
-                <td class="text-center text-green-darken-4 font-weight-bold">
-                    {{ contingent.rating.average.toFixed(2) }}
-                </td>
-
                 <!-- technical deductions -->
+                <!--
                 <td
                     v-for="(technical, technicalIndex) in resultSheet.technicals"
                     :key="technical.id"
                     class="text-center text-subtitle-1 text-red-darken-1"
                     :class="{ 'bg-grey-lighten-3': technical.deductions[`c_${contingent.id}`].locked == 0 }"
                 >
-                    {{ technical.deductions[`c_${contingent.id}`].value.toFixed(1) }}
+                    {{ technical.deductions[`c_${contingent.id}`].value.toFixed(2) }}
                 </td>
+                -->
 
                 <!-- total deductions -->
-                <td class="text-center text-red-darken-3 font-weight-bold">
-                    {{ contingent.deduction.total.toFixed(1) }}
+                <td class="text-right text-red-darken-3 font-weight-bold">
+                    {{ contingent.deduction.total.toFixed(2) }}
                 </td>
 
-                <!-- final -->
-                <td class="text-center text-black font-weight-bold">
+                <!-- judge ratings -->
+                <template v-for="(judge, judgeIndex) in resultSheet.judges" :key="judge.id">
+                    <td
+                        class="text-right text-subtitle-1 text-green-darken-2"
+                        :class="{ 'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0 }"
+                    >
+                        {{ judge.ratings[`c_${contingent.id}`].value.toFixed(2) }}
+                    </td>
+                    <td
+                        class="text-right text-subtitle-1 text-blue-darken-2 font-weight-bold"
+                        :class="{ 'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0 }"
+                    >
+                        {{ judge.ratings[`c_${contingent.id}`].rank.fraction.toFixed(2) }}
+                    </td>
+                </template>
+
+                <!-- judge average -->
+                <!--
+                <td class="text-right text-green-darken-4 font-weight-bold">
+                    {{ contingent.rating.average.toFixed(2) }}
+                </td>
+                -->
+
+                <!-- average -->
+                <td class="text-right text-green-darken-3 font-weight-bold">
                     {{ contingent.final.rating_average.less_deduction_total.toFixed(2) }}
                 </td>
 
-                <!-- rank -->
-                <td class="text-center text-primary">
+                <!-- rank total -->
+                <td class="text-center text-black font-weight-bold">
+                    {{ contingent.rank.fraction.total.toFixed(2) }}
+                </td>
+
+                <!-- final rank -->
+                <td class="text-center text-h6 text-primary font-weight-bold">
                     {{ ranks[`c_${contingent.id}`] }}
                 </td>
             </tr>
@@ -178,7 +214,8 @@
         for(let i=0; i<resultSheet.contingents.length; i++) {
             const contingent = resultSheet.contingents[i];
             scoreTotals[`c_${contingent.id}`] = {
-                value: contingent.final.rating_average.less_deduction_total
+                // value: contingent.final.rating_average.less_deduction_total
+                value: contingent.rank.fraction.total
             }
         }
 
@@ -186,7 +223,7 @@
         const scores = _.map(scoreTotals, (obj: { value: RatingValueType }) => obj.value);
 
         // sort the 'scores' array in descending order
-        const sortedScores = _.sortBy(scores, (score: RatingValueType) => score).reverse();
+        const sortedScores = _.sortBy(scores, (score: RatingValueType) => score);//.reverse();
 
         // create a map of scores to their ranks
         const scoreRankMap = _.reduce(sortedScores, (result: { [key: number]: number[] }, score: RatingValueType, index: number) => {
@@ -216,9 +253,9 @@
                 resultSheet.technicals  = result.technicals;
                 resultSheet.ready = true;
 
-                setTimeout(() => {
-                    getResults();
-                }, 1500);
+                // setTimeout(() => {
+                //     getResults();
+                // }, 1500);
             });
     };
 
@@ -231,5 +268,7 @@
 
 
 <style scoped>
-
+    th, td {
+        border: 1px solid #ddd;
+    }
 </style>
