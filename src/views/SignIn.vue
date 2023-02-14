@@ -2,6 +2,26 @@
     <v-row class="ma-0 fill-height" justify="center" align="center">
         <v-col cols="12" sm="8" md="6" lg="5" class="px-5">
             <v-form @submit="handleSignIn">
+                <v-img
+                    :src="`/assets/logo.png`"
+                    :lazy-src="`/assets/logo.png`"
+                    aspect-ratio="1"
+                    height="400"
+                    class="mb-4"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                        class="fill-height ma-0"
+                        align="center"
+                        justify="center"
+                    >
+                      <v-progress-circular
+                          indeterminate
+                          color="grey-lighten-5"
+                      ></v-progress-circular>
+                    </v-row>
+                  </template>
+                </v-img>
                 <v-text-field
                     v-model="username"
                     type="text"
