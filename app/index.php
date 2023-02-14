@@ -49,3 +49,6 @@ else if($POST = json_decode(file_get_contents('php://input'), true)) {
     else
         denyAccess();
 }
+
+else
+    denyAccess();

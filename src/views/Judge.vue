@@ -16,7 +16,7 @@
 
 
     // components
-    import JudgeScoreSheet from '../components/score/JudgeScoreSheet.vue'
+    import JudgeScoreSheet from '../components/score/JudgeScoreSheet.vue';
 
 
     // use hooks

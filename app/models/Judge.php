@@ -4,7 +4,7 @@ require_once 'User.php';
 
 class Judge extends User
 {
-    public function __construct($username, $password)
+    public function __construct($username = '', $password = '')
     {
         parent::__construct($username, $password, 'judge');
     }
@@ -39,6 +39,16 @@ class Judge extends User
             'criteria'    => $criteriaInfos,
             'ratings'     => $ratings
         ];
+    }
+
+
+    public static function all()
+    {
+        $judge = new Judge();
+        $sql = "SELECT id, number, fullname, avatar, is_chairman FROM $judge->table ORDER BY number";
+        $result = $judge->conn->query($sql);
+
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
 
