@@ -97,6 +97,7 @@
             </tr>
         </thead>
 
+        <!-- table body -->
         <tbody>
             <tr
                 v-for="(contingent, contingentIndex) in resultSheet.contingents"
@@ -168,6 +169,48 @@
                 </td>
             </tr>
         </tbody>
+
+        <!-- table footer -->
+        <tfoot>
+            <tr>
+                <td :colspan="6 + (resultSheet.judges.length * 2)" class="justify-center">
+                    <v-row>
+                        <template
+                            v-for="(technical, technicalIndex) in resultSheet.technicals"
+                            :key="technical.id"
+                        >
+                            <v-col :cols="parseInt(((12 / (resultSheet.technicals.length + resultSheet.judges.length)).toString()))">
+                                <v-card class="text-center mb-5" flat>
+                                    <v-card-title class="pt-16 font-weight-bold">
+                                        {{ technical.fullname }}
+                                    </v-card-title>
+                                    <v-card-text class="text-center">
+                                        Technical Judge {{ technical.number }}
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </template>
+
+                        <template
+                            v-for="(judge, judgeIndex) in resultSheet.judges"
+                            :key="judge.id"
+                        >
+                            <v-col :cols="parseInt(((12 / (resultSheet.technicals.length + resultSheet.judges.length)).toString()))">
+                                <v-card class="text-center mb-5" flat>
+                                    <v-card-title class="pt-16 font-weight-bold">
+                                        {{ judge.fullname }}
+                                    </v-card-title>
+                                    <v-card-text class="text-center">
+                                        Judge {{ judge.number }} <template v-if="judge.is_chairman == 1">(Chairman)</template>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </template>
+                    </v-row>
+                </td>
+            </tr>
+        </tfoot>
+
     </v-table>
 
     <!-- loader -->
