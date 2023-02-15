@@ -1,7 +1,7 @@
 <template>
     <v-row class="ma-0 fill-height" justify="center" align="center">
         <v-col cols="12" sm="8" md="6" lg="5" class="px-5">
-            <v-form @submit="handleSignIn">
+            <v-form @submit="handleSignIn" class="mb-16 pb-16">
                 <v-img
                     :src="`/${store.appName}/logo.png`"
                     aspect-ratio="1"
