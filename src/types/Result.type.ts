@@ -89,3 +89,9 @@ export type ResultSheetType = {
     technicals: ResultTechnicalArrayType,
     ready: boolean
 };
+
+export type ResultScoreTotalType = {
+    [key: string]: {
+        value: RatingValueType
+    }
+}
