@@ -24,7 +24,10 @@ else {
 
             $results = $admin->getResults($portion);
 
-            echo json_encode($results);
+            echo json_encode([
+                'portion' => $portion,
+                'results' => $results
+            ]);
         }
     }
 

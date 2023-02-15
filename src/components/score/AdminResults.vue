@@ -247,15 +247,21 @@
     const getResults = async () => {
         await store.requestAsync('GET', null, `getResults=${props.portion}`, `admin.php`)
             .then(result => {
-                resultSheet.contingents = result.contingents;
-                resultSheet.judges      = result.judges;
-                resultSheet.criteria    = result.criteria;
-                resultSheet.technicals  = result.technicals;
+                const results = result.results;
+                const portion = result.portion;
+
+                resultSheet.contingents = results.contingents;
+                resultSheet.judges      = results.judges;
+                resultSheet.criteria    = results.criteria;
+                resultSheet.technicals  = results.technicals;
                 resultSheet.ready = true;
 
-                // setTimeout(() => {
-                //     getResults();
-                // }, 1500);
+                // repeat request
+                if(portion == portionStore.activePortion) {
+                    setTimeout(() => {
+                        getResults();
+                    }, 2400);
+                }
             });
     };
 

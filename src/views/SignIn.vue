@@ -1,10 +1,9 @@
 <template>
     <v-row class="ma-0 fill-height" justify="center" align="center">
         <v-col cols="12" sm="8" md="6" lg="5" class="px-5">
-            <v-form @submit="handleSignIn">
+            <v-form @submit="handleSignIn" class="mb-16 pb-16">
                 <v-img
-                    :src="`/assets/logo.png`"
-                    :lazy-src="`/assets/logo.png`"
+                    :src="`/${store.appName}/logo.png`"
                     aspect-ratio="1"
                     height="400"
                     class="mb-4"
@@ -60,11 +59,13 @@
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
     import { useRouter } from 'vue-router';
+    import { useStore } from '../store/store';
     import { useAuthStore } from '../store/store-auth';
     import { usePortionStore } from '../store/store-portion';
 
     // use hooks
     const router = useRouter();
+    const store = useStore();
     const authStore = useAuthStore();
     const portionStore = usePortionStore();
 
