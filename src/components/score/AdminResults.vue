@@ -38,14 +38,22 @@
                 <!-- th judges -->
                 <template v-for="(judge, judgeIndex) in resultSheet.judges" :key="judge.id">
                     <th>
-                        <div class="h-100 d-flex justify-center flex-column align-center text-subtitle-1 text-green-darken-4">
-                            J{{ judge.number }}
+                        <div
+                            class="h-100 d-flex justify-center flex-column align-center text-subtitle-1"
+                            :class="{
+                                'text-green-darken-4': judge.is_chairman == 0,
+                                'text-red-darken-4': judge.is_chairman == 1
+                            }"
+                        >
+                            Judge
                             <div v-if="judge.is_chairman == 1">CHAIRMAN</div>
+                            <div v-else>{{ judge.number }}</div>
                         </div>
                     </th>
                     <th>
-                        <div class="h-100 d-flex justify-center align-center text-subtitle-1 text-blue-darken-4 font-weight-bold">
-                            R{{ judge.number }}
+                        <div class="h-100 d-flex justify-center flex-column align-center text-subtitle-1 text-blue-darken-4 font-weight-bold">
+                            Rank
+                            <div>{{ judge.number }}</div>
                         </div>
                     </th>
                 </template>
@@ -69,18 +77,20 @@
                 </th>
                 <!-- th rank total -->
                 <th>
-                    <div class="h-100 d-flex justify-center align-center">
+                    <div class="h-100 d-flex flex-column justify-center align-center">
                         <div class="text-subtitle-1 text-black font-weight-bold">
-                            Total Rank
+                            Total
+                            <div>Rank</div>
                         </div>
                     </div>
                 </th>
 
                 <!-- th rank -->
                 <th>
-                    <div class="h-100 d-flex justify-center align-center">
+                    <div class="h-100 d-flex flex-column justify-center align-center">
                         <div class="text-h6 text-primary font-weight-bold">
-                            FINAL RANK
+                            FINAL
+                            <div>RANK</div>
                         </div>
                     </div>
                 </th>
@@ -118,8 +128,12 @@
                 <!-- judge ratings -->
                 <template v-for="(judge, judgeIndex) in resultSheet.judges" :key="judge.id">
                     <td
-                        class="text-right text-subtitle-1 text-green-darken-2"
-                        :class="{ 'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0 }"
+                        class="text-right text-subtitle-1"
+                        :class="{
+                            'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0,
+                            'text-green-darken-4': judge.is_chairman == 0,
+                            'text-red-darken-3': judge.is_chairman == 1
+                        }"
                     >
                         {{ judge.ratings[`c_${contingent.id}`].value.toFixed(2) }}
                     </td>
