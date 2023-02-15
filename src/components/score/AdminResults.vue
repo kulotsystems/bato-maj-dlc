@@ -41,8 +41,8 @@
                         <div
                             class="h-100 d-flex justify-center flex-column align-center text-subtitle-1"
                             :class="{
-                                'text-green-darken-4': judge.is_chairman == 0,
-                                'text-red-darken-4': judge.is_chairman == 1
+                                'text-green-darken-3': judge.is_chairman == 0,
+                                'text-red-darken-3': judge.is_chairman == 1
                             }"
                         >
                             Judge
@@ -51,7 +51,7 @@
                         </div>
                     </th>
                     <th>
-                        <div class="h-100 d-flex justify-center flex-column align-center text-subtitle-1 text-blue-darken-4 font-weight-bold">
+                        <div class="h-100 d-flex justify-center flex-column align-center text-subtitle-1 text-blue-darken-3 font-weight-bold">
                             Rank
                             <div>{{ judge.number }}</div>
                         </div>
@@ -78,25 +78,36 @@
                 <!-- th rank total -->
                 <th>
                     <div class="h-100 d-flex flex-column justify-center align-center">
-                        <div class="text-subtitle-1 text-black font-weight-bold">
+                        <div class="text-subtitle-1 text-blue-darken-4 font-weight-bold">
                             Total
-                            <div>Rank</div>
+                            <div class="text-center">Rank</div>
                         </div>
                     </div>
                 </th>
 
-                <!-- th rank -->
+                <!-- th initial rank -->
                 <th>
                     <div class="h-100 d-flex flex-column justify-center align-center">
-                        <div class="text-h6 text-primary font-weight-bold">
+                        <div class="text-h6 text-grey-darken-1 font-weight-bold">
+                            INITIAL
+                            <div class="text-center">RANK</div>
+                        </div>
+                    </div>
+                </th>
+
+                <!-- th final rank -->
+                <th>
+                    <div class="h-100 d-flex flex-column justify-center align-center">
+                        <div class="text-h6 text-black font-weight-bold">
                             FINAL
-                            <div>RANK</div>
+                            <div class="text-center">RANK</div>
                         </div>
                     </div>
                 </th>
             </tr>
         </thead>
 
+        <!-- table body -->
         <tbody>
             <tr
                 v-for="(contingent, contingentIndex) in resultSheet.contingents"
@@ -131,8 +142,8 @@
                         class="text-right text-subtitle-1"
                         :class="{
                             'bg-grey-lighten-3': judge.ratings[`c_${contingent.id}`].locked == 0,
-                            'text-green-darken-4': judge.is_chairman == 0,
-                            'text-red-darken-3': judge.is_chairman == 1
+                            'text-green-darken-2': judge.is_chairman == 0,
+                            'text-red-darken-2': judge.is_chairman == 1
                         }"
                     >
                         {{ judge.ratings[`c_${contingent.id}`].value.toFixed(2) }}
@@ -158,16 +169,63 @@
                 </td>
 
                 <!-- rank total -->
-                <td class="text-center text-black font-weight-bold">
+                <td class="text-center text-blue-darken-3 font-weight-bold">
                     {{ contingent.rank.fraction.total.toFixed(2) }}
                 </td>
 
+                <!-- initial rank -->
+                <td class="text-center text-h6 text-grey-darken-1 font-weight-bold">
+                    {{ initialRanks[`c_${contingent.id}`] }}
+                </td>
+
                 <!-- final rank -->
-                <td class="text-center text-h6 text-primary font-weight-bold">
-                    {{ ranks[`c_${contingent.id}`] }}
+                <td class="text-center text-h6 text-black font-weight-bold">
+                    {{ finalRanks[`c_${contingent.id}`] }}
                 </td>
             </tr>
         </tbody>
+
+        <!-- table footer -->
+        <tfoot>
+            <tr>
+                <td :colspan="7 + (resultSheet.judges.length * 2)" class="justify-center">
+                    <v-row>
+                        <template
+                            v-for="(technical, technicalIndex) in resultSheet.technicals"
+                            :key="technical.id"
+                        >
+                            <v-col :cols="parseInt(((12 / (resultSheet.technicals.length + resultSheet.judges.length)).toString()))">
+                                <v-card class="text-center mb-5" flat>
+                                    <v-card-title class="pt-16 font-weight-bold">
+                                        {{ technical.fullname }}
+                                    </v-card-title>
+                                    <v-card-text class="text-center">
+                                        Technical Judge {{ technical.number }}
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </template>
+
+                        <template
+                            v-for="(judge, judgeIndex) in resultSheet.judges"
+                            :key="judge.id"
+                        >
+                            <v-col :cols="parseInt(((12 / (resultSheet.technicals.length + resultSheet.judges.length)).toString()))">
+                                <v-card class="text-center mb-5" flat>
+                                    <v-card-title class="pt-16 font-weight-bold">
+                                        {{ judge.fullname }}
+                                    </v-card-title>
+                                    <v-card-text class="text-center">
+                                        Judge {{ judge.number }} <template v-if="judge.is_chairman == 1">(Chairman)</template>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </template>
+                    </v-row>
+                </td>
+            </tr>
+        </tfoot>
+
     </v-table>
 
     <!-- loader -->
@@ -190,6 +248,7 @@
     import { PortionKeyType } from '../../types/Portion.type';
     import { ResultSheetType } from '../../types/Result.type';
     import { RatingValueType } from '../../types/Rating.type';
+    import { ResultScoreTotalType } from '../../types/Result.type';
 
 
     // props
@@ -217,24 +276,41 @@
     // computed
     const resultSheetHeight = computed(() => store.window.height - 64);
 
-    const ranks = computed(() => {
-        // prepare scoreTotals
-        type ScoreTotalType = {
-            [key: string]: {
-                value: RatingValueType
-            }
-        }
-        const scoreTotals: ScoreTotalType = {};
+    const initialRanks = computed(() => {
+        // prepare payload
+        const payload: ResultScoreTotalType = {};
         for(let i=0; i<resultSheet.contingents.length; i++) {
             const contingent = resultSheet.contingents[i];
-            scoreTotals[`c_${contingent.id}`] = {
+            payload[`c_${contingent.id}`] = {
                 // value: contingent.final.rating_average.less_deduction_total
                 value: contingent.rank.fraction.total
             }
         }
 
-        // get the value of the 'value' property from each object in the 'scoreTotals' object
-        const scores = _.map(scoreTotals, (obj: { value: RatingValueType }) => obj.value);
+        // compute rank
+        return computeRank(payload);
+    });
+
+    const finalRanks = computed(() => {
+        // prepare payload
+        const payload: ResultScoreTotalType = {};
+        for(let i=0; i<resultSheet.contingents.length; i++) {
+            const contingent = resultSheet.contingents[i];
+            payload[`c_${contingent.id}`] = {
+                // value: contingent.final.rating_average.less_deduction_total
+                value: contingent.rank.fraction.total - (contingent.rating.average * 0.0001)
+            }
+        }
+
+        // compute rank
+        return computeRank(payload);
+    });
+
+
+    // methods
+    const computeRank = (payload: ResultScoreTotalType) => {
+        // get the value of the 'value' property from each object in the 'payload' object
+        const scores = _.map(payload, (obj: { value: RatingValueType }) => obj.value);
 
         // sort the 'scores' array in descending order
         const sortedScores = _.sortBy(scores, (score: RatingValueType) => score);//.reverse();
@@ -249,15 +325,14 @@
         }, {});
 
         // compute the average rank of each score
-        return _.mapValues(scoreTotals, (obj: { value: RatingValueType }, key: string) => {
+        return _.mapValues(payload, (obj: { value: RatingValueType }, key: string) => {
             const score = obj.value;
             const ranks = scoreRankMap[score];
             return _.sum(ranks) / ranks.length;
         });
-    });
+    };
 
 
-    // methods
     const getResults = async () => {
         await store.requestAsync('GET', null, `getResults=${props.portion}`, `admin.php`)
             .then(result => {
