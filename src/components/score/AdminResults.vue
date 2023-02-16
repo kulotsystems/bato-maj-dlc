@@ -282,7 +282,6 @@
         for(let i=0; i<resultSheet.contingents.length; i++) {
             const contingent = resultSheet.contingents[i];
             payload[`c_${contingent.id}`] = {
-                // value: contingent.final.rating_average.less_deduction_total
                 value: contingent.rank.fraction.total
             }
         }
@@ -297,8 +296,7 @@
         for(let i=0; i<resultSheet.contingents.length; i++) {
             const contingent = resultSheet.contingents[i];
             payload[`c_${contingent.id}`] = {
-                // value: contingent.final.rating_average.less_deduction_total
-                value: contingent.rank.fraction.total - (contingent.rating.average * 0.0001)
+                value: contingent.rank.fraction.total - (contingent.rating.average * 0.001)
             }
         }
 
