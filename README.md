@@ -23,7 +23,7 @@ Here are the steps to set up the development environment for this project:
    ```
 7. Inside [phpMyAdmin](http://localhost/phpmyadmin),
    create a MySQL database named `bato-maj-dlc` and import [bato-maj-dlc.sql](bato-maj-dlc.sql) into it.
-8. Open your web browser and access <http://localhost:5175/bato-maj-dlc> to view the application.
+8. Open your web browser and access <http://localhost:5175/bato-maj-dlc/> to view the application.
 
 
 ## Production Deployment
