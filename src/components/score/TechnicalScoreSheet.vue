@@ -308,14 +308,20 @@
     }
 
 
-    const move = (y: number, focus: boolean = true) => {
+    const move = (y: number, callback: false | ((y: number) => void), focus: boolean = true) => {
         // move to input
         const nextInput = document.querySelector(`#input_${y}`) as HTMLInputElement;
         if(nextInput) {
-            if(focus)
-                nextInput.focus();
-            if(Number(nextInput.value) <= 0)
-                nextInput.select();
+            if(nextInput.disabled) {
+                if(callback)
+                    callback(y);
+            }
+            else {
+                if(focus)
+                    nextInput.focus();
+                if(Number(nextInput.value) <= 0)
+                    nextInput.select();
+            }
         }
     }
 
@@ -323,19 +329,19 @@
         // move to input below
         y += 1;
         if(y < deductionSheet.contingents.length)
-            move(y);
+            move(y, moveDown);
     };
 
     const moveUp = (y: number) => {
         // move to input above
         y -= 1;
         if(y >= 0)
-            move(y);
+            move(y, moveUp);
     };
 
     const updateCoordinates = (y: number) => {
         coordinates.y = y;
-        move(y, false);
+        move(y, false, false);
     };
 
 
