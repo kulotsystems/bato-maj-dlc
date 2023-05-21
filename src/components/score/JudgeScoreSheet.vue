@@ -486,7 +486,6 @@
                     break;
                 }
             }
-            console.log(invalidTotalKey);
 
             if(invalidTotalKey)
                 inspectOpen.value = true;
@@ -502,14 +501,20 @@
     }
 
 
-    const move = (x: number, y: number, focus: boolean = true) => {
+    const move = (x: number, y: number, callback: false | ((x: number, y: number) => void), focus: boolean = true) => {
         // move to input
         const nextInput = document.querySelector(`#input_${y}_${x}`) as HTMLInputElement;
         if(nextInput) {
-            if(focus)
-                nextInput.focus();
-            if(Number(nextInput.value) <= 0)
-                nextInput.select();
+            if(nextInput.disabled) {
+                if(callback)
+                    callback(x, y);
+            }
+            else {
+                if(focus)
+                    nextInput.focus();
+                if(Number(nextInput.value) <= 0)
+                    nextInput.select();
+            }
         }
     }
 
@@ -517,34 +522,34 @@
         // move to input below
         y += 1;
         if(y < scoreSheet.contingents.length)
-            move(x, y);
+            move(x, y, moveDown);
     };
 
     const moveUp = (x: number, y: number) => {
         // move to input above
         y -= 1;
         if(y >= 0)
-            move(x, y);
+            move(x, y, moveUp);
     };
 
     const moveRight = (x: number, y: number) => {
         // move to input to the right
         x += 1;
         if(x <= scoreSheet.criteria.length)
-            move(x, y);
+            move(x, y, moveRight);
     };
 
     const moveLeft = (x: number, y: number) => {
         // move to input to the left
         x -= 1;
         if(x >= 0)
-            move(x, y);
+            move(x, y, moveLeft);
     };
 
     const updateCoordinates = (x: number, y: number) => {
         coordinates.x = x;
         coordinates.y = y;
-        move(x, y, false);
+        move(x, y, false, false);
     };
 
 
